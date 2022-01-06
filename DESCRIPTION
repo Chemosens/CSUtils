@@ -10,5 +10,5 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
 Depends: R (>= 3.5.0)
-Imports: ellipse, ggforce, ggrepel, ggplot2,doBy,car, lme4,lmerTest,lsmeans,multcomp,reshape2,MuMIn,FactoMineR,stringr,grDevices,Rmisc,testthat
+Imports: ellipse, ggforce, ggrepel, ggplot2,doBy,car, htmltools,RCurl,lme4,lmerTest,lsmeans,multcomp,reshape2,MuMIn,kableExtra,sqldf,FactoMineR,stringr,grDevices,Rmisc,testthat
 
