@@ -10,7 +10,7 @@
 #' @return a list containing IndivCoord,VarCoord,IndSup,EigenVectors, EigenValues
 #' @importFrom stats pchisq lm manova cor reshape aggregate  sd
 #' @importFrom utils combn
-
+#' @export
 CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="TwoWayANOVA", representation="Biplot") {
 
 #  extendedData=reshape2::dcast(df, Subject+Product+Rep~Attribute,mean)

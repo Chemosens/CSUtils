@@ -7,6 +7,12 @@
 #' @param columns Elements to add in the table.
 #' @return A dataframe.
 #' @importFrom stats residuals shapiro.test
+#' @importFrom car Anova leveneTest
+#' @importFrom lme4 lmer
+#' @importFrom lsmeans lsmeans
+#' @importFrom multcomp cld
+#' @importFrom MuMIn r.squaredGLMM
+#' @importFrom lmerTest rand
 #' @export
 anovaTable=function(df, model, alpha=0.05, unit="descriptor", columns=c("G_Mean","F_Product","P_Product","F_Product_Significance","SE_Product","R2","P_ShapiroWilks","P_Levene_Product","Mean_Product","Group_Product")) {
 
@@ -16,18 +22,18 @@ anovaTable=function(df, model, alpha=0.05, unit="descriptor", columns=c("G_Mean"
 
   # TODO : LSD, RMSE
   computeANOVA=function(x) {
-    
+
     att=as.character(x[[unit]])
-    
+
     d=df[df[,unit]==att,]
     index=tableANOVA[,unit]==att
 
-    res=lme4::lmer(as.formula(model), data=d)
-    res.anova=car::Anova(res,type=3,singular.ok=TRUE,test.statistic="F")
-    
-    res.lsmeans=lsmeans::lsmeans(res,~ product)
-    res.cld=multcomp::cld(res.lsmeans, alpha=alpha, Letters=letters, adjust="tukey")
-    
+    res=lmer(as.formula(model), data=d)
+    res.anova=Anova(res,type=3,singular.ok=TRUE,test.statistic="F")
+
+    res.lsmeans=lsmeans(res,~ product)
+    res.cld=cld(res.lsmeans, alpha=alpha, Letters=letters, adjust="tukey")
+
     if ("G_Mean" %in% columns) {
      tableANOVA[index,"G_Mean"]<<-round(mean(d$score),2)
     }
@@ -44,13 +50,13 @@ anovaTable=function(df, model, alpha=0.05, unit="descriptor", columns=c("G_Mean"
       tableANOVA[index,"SE_Product"]<<-round(res.cld[1,"SE"],2)
     }
     if ("R2" %in% columns) {
-      tableANOVA[index,"R2"]<<-round(MuMIn::r.squaredGLMM(res)[,"R2c"],2)
+      tableANOVA[index,"R2"]<<-round(r.squaredGLMM(res)[,"R2c"],2)
     }
     if ("P_ShapiroWilks" %in% columns) {
       tableANOVA[index,"P_ShapiroWilks"]<<-round(shapiro.test(residuals(res))$p.value,3)
     }
     if ("P_LeveneProduct" %in% columns) {
-      tableANOVA[index,"P_Levene_Product"]<<-round(car::leveneTest(residuals(res) ~ d$product)["group","Pr(>F)"],3)
+      tableANOVA[index,"P_Levene_Product"]<<-round(leveneTest(residuals(res) ~ d$product)["group","Pr(>F)"],3)
     }
     if ("Mean_Product" %in% columns) {
       for (p in sort(res.cld[,"product"])) {
@@ -62,29 +68,29 @@ anovaTable=function(df, model, alpha=0.05, unit="descriptor", columns=c("G_Mean"
         tableANOVA[index,paste("Group_",p,sep="")]<<-trimws(res.cld[res.cld$product==p,".group"])
       }
     }
-    
+
     if ("P_Subject" %in% columns) {
-      resRandom=lmerTest::rand(res)
+      resRandom=rand(res)
       tableANOVA[index,"P_Subject"]<<-round(resRandom["(1 | subject)","Pr(>Chisq)"],2)
     }
-    
+
     if ("P_ProductSubject" %in% columns) {
-      resRandom=lmerTest::rand(res)
+      resRandom=rand(res)
       tableANOVA[index,"P_ProductSubject"]<<-round(resRandom["(1 | product:subject)","Pr(>Chisq)"],2)
     }
-    
-    
+
+
   }
-  
+
   apply(tableANOVA,1, computeANOVA)
-  
+
   tableANOVA=tableANOVA[order(tableANOVA$P_Product),]
-  
+
   tableANOVA$ID=NULL
-  
+
 #  tableANOVA=print(tableANOVA, row.names = FALSE)
 
   #TODO : supprimer rownames
-  
+
   return (tableANOVA)
 }

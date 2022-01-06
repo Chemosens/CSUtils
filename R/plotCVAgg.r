@@ -1,3 +1,5 @@
+#' plotCVAgg
+#' Plots the results of a CVA
 #' @param respcagg res of PCA gg
 #' @param type "ind" for individual graph, "var" for variable graph,"cor" for univariate correlations in decreasing order with the PCA axes
 #' @param text Boolean indicating whether the labels should be displayed (TRUE) or not (FALSE)
@@ -5,7 +7,8 @@
 #' @param colorInd if type(respcagg)="raw", this parameter allows to color the individuals according to a letter in the name of individual. It can be the first one (with "first") or another subset of character ("substr") defined in substrVec
 #' @param substrVec vector of two numbers representing the two limit positions of characters to be selected when colorInd="substr"
 #' @param axes c(1,2). Axes to be plotted
-#' @param indsup "ell","points" or "none"
+#' @param indSup "ell","points" or "none"
+#' @param repel if TRUE, ggrepel is used to place the labels
 #' @export
 #' @importFrom ggforce geom_circle
 #' @import ggplot2

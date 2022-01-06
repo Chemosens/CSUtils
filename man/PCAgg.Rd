@@ -13,7 +13,12 @@ PCAgg(
   value.var = "score",
   variable = "descriptor",
   axes = list(c(1, 2)),
-  expandBiplot = NULL
+  expandBiplot = NULL,
+  confInt = 0.9,
+  ellipseType = "barycentric",
+  ellipseCalculation = "Chi",
+  bootstrap = FALSE,
+  nSamples = 100
 )
 }
 \arguments{
@@ -33,7 +38,15 @@ PCAgg(
 
 \item{expandBiplot}{numeric that allows to custumize the size of variables arrows. If NULL, this parameter is optimized according to the graph.}
 
-\item{...}{Further parameters in PCA and in calculateEllipses}
+\item{confInt}{threshold for confidence intervall. A value of 0.9 (the default) for barycentric ellipses indicates that the mean is inside the ellipse at 90\%. For individual ellipses, one individual has 90\% of chances to be in the ellipse}
+
+\item{ellipseType}{"barycentric" or "individual". Barycentric is the confidence ellipse for the mean while individual is the confidence ellipse for the individuals.}
+
+\item{ellipseCalculation}{"Chi","F" or "SAS". Method to estimate the ellipse calculation.}
+
+\item{bootstrap}{=FALSE If TRUE the ellipses represents the variability}
+
+\item{nSamples}{=100 Numer of samples used with bootstrap option}
 }
 \value{
 listCoord

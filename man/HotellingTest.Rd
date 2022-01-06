@@ -7,6 +7,11 @@ analyse p variee : mat x et mat y auront p colonnes}
 \usage{
 HotellingTest(matx, maty)
 }
+\arguments{
+\item{matx}{matrix with n rows and p columns to be compared to maty}
+
+\item{maty}{matrix with n rows and p columns to be compared to matx}
+}
 \description{
 HotellingTest
 analyse p variee : mat x et mat y auront p colonnes

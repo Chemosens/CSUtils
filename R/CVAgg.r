@@ -1,15 +1,14 @@
 #' @title CVAgg
 #' Calculates the CVAs (potentially by period of time) and returns coordinates as long data.frames to make easier ggplot
 #' @param df a long dataframe with subject, product, descriptor, score, rep and period
-#' @param ... Further parameters in PCA and in calculateEllipses
 #' @return listCoord
 #' @inheritParams CVA
 #' @inheritParams calculateEllipses
 #' @export
 #' @importFrom stats as.formula
-CVAgg=function(df,confInt=0.9,axes=list(c(1,2)),option="TwoWayANOVA",  representation="DistanceBiplot",ellipseType="barycentric",productName="product",subjectName="subject",ellipseCalculation="Chi",bootstrap=FALSE,nSamples=100,nbDimHotelling=NULL,...)
+CVAgg=function(df,confInt=0.9,axes=list(c(1,2)),option="TwoWayANOVA",  representation="DistanceBiplot",ellipseType="barycentric",productName="product",subjectName="subject",ellipseCalculation="Chi",bootstrap=FALSE,nSamples=100,nbDimHotelling=NULL)
 {
-  
+
   formula="subject+product+rep~descriptor"
   df$period="1"
   formula=as.formula(formula)
@@ -18,7 +17,7 @@ CVAgg=function(df,confInt=0.9,axes=list(c(1,2)),option="TwoWayANOVA",  represent
   varCoord=NULL
   inertia=NULL
   indivEllipsesCoord=NULL
-  parameters=list(...)
+
   extendedData=reshape2::dcast(df, formula=formula,fun.aggregate=mean,value.var="score")
   resCva=CVA(extendedData, option=option,  representation=representation,nbDimHotelling=nbDimHotelling)
 
@@ -36,14 +35,14 @@ CVAgg=function(df,confInt=0.9,axes=list(c(1,2)),option="TwoWayANOVA",  represent
       expand.conseil=max.norm.prod/max.norm.suj
       dfvar[,"x"]=expand.conseil*dfvar[,"x"];dfvar[,"y"]=expand.conseil*dfvar[,"y"]
       varCoord=rbind(varCoord,dfvar)
-      indivEllipsesCoord=rbind(indivEllipsesCoord,dfell); 
-      dfinertia=data.frame(x=round(100*resCva$EigenValues[axes_tmp[1]]/sum(resCva$EigenValues),digits=0),y=round(100*resCva$EigenValues[axes_tmp[2]]/sum(resCva$EigenValues),digits=0),axes=paste(axes_tmp[1],axes_tmp[2],sep=",")) 
+      indivEllipsesCoord=rbind(indivEllipsesCoord,dfell);
+      dfinertia=data.frame(x=round(100*resCva$EigenValues[axes_tmp[1]]/sum(resCva$EigenValues),digits=0),y=round(100*resCva$EigenValues[axes_tmp[2]]/sum(resCva$EigenValues),digits=0),axes=paste(axes_tmp[1],axes_tmp[2],sep=","))
       inertia=rbind(inertia,dfinertia)
     }
 #  }
   listCoord$indivCoord=indivCoord;
   listCoord$varCoord=varCoord
-  listCoord$indivEllipsesCoord=indivEllipsesCoord; 
+  listCoord$indivEllipsesCoord=indivEllipsesCoord;
   listCoord$inertia=inertia
   listCoord$eigenValues=resCva$EigenValues
   listCoord$option="Covariance"

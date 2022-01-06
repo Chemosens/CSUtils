@@ -17,8 +17,7 @@ CVAgg(
   ellipseCalculation = "Chi",
   bootstrap = FALSE,
   nSamples = 100,
-  nbDimHotelling = NULL,
-  ...
+  nbDimHotelling = NULL
 )
 }
 \arguments{
@@ -45,8 +44,6 @@ CVAgg(
 \item{nSamples}{=100 Numer of samples used with bootstrap option}
 
 \item{nbDimHotelling}{If NULL, nbDimSig,}
-
-\item{...}{Further parameters in PCA and in calculateEllipses}
 }
 \value{
 listCoord

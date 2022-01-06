@@ -1,12 +1,13 @@
-data("tds")
-
+library(CSUtils)
+library(testthat)
+data(duration)
 #====================================
 # Coherence between PCA and prcomp
 #====================================
-extendedData=reshape2::dcast(tds$durations, product~descriptor,mean)
-extendedData2=reshape2::dcast(tds$durations, product+subject~descriptor,mean)
+extendedData=reshape2::dcast(duration, product~descriptor,mean)
+extendedData2=reshape2::dcast(duration, product+subject~descriptor,mean)
 
-# Equalities for option="Covariance" 
+# Equalities for option="Covariance"
 #-------------------------------------------
 respca=PCA(extendedData,representation="twoMaps")
 respca_raw=PCA(extendedData,representation="twoMaps",dataType="raw")
@@ -28,7 +29,7 @@ test_that("raw similar to usual when only product columns (biplot)",
             all.equal(resbiplot[1:9],resbiplot_raw[1:9])
           ))
 
-# SVD DECOMPOSITION 
+# SVD DECOMPOSITION
 # Equalities of eigenvectors
 
 test_that("eigen vectors",
@@ -57,7 +58,7 @@ test_that("variable correlation: axe 1 (opt cov): ",
           expect_true(
             sum(round(respca_theoF$var$cor[,1]+respca$VarCoord[,1],digits=10e-15))==0
           ))
-          
+
 test_that("variable correlation: axe 2(opt cov): ",
                     expect_true(
                     sum(  round(respca_theoF$var$cor[,2]-respca$VarCoord[,2],digits=10e-15))==0
@@ -71,7 +72,7 @@ sum(as.matrix(resbiplot$IndivCoord)%*%t(as.matrix(resbiplot$VarCoord))-resbiplot
 # Supplementary individuals
 #respca2$IndSup==respca_theoF2
 
-## Equalities for option="Correlation" 
+## Equalities for option="Correlation"
 #-------------------------------------------
 respcaCor=PCA(extendedData,option="Correlation",representation="twoMaps")
 respcaCor_raw=PCA(extendedData,option="Correlation",dataType="raw",representation="twoMaps")

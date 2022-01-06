@@ -1,5 +1,7 @@
 #' HotellingTest
 #' analyse p variee : mat x et mat y auront p colonnes
+#' @param matx matrix with n rows and p columns to be compared to maty
+#' @param maty matrix with n rows and p columns to be compared to matx
 #' @export
 HotellingTest=function(matx,maty)
 {

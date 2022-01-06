@@ -8,10 +8,14 @@
 #' @param colorInd if type(respcagg)="raw", this parameter allows to color the individuals according to a letter in the name of individual. It can be the first one (with "first") or another subset of character ("substr") defined in substrVec
 #' @param substrVec vector of two numbers representing the two limit positions of characters to be selected when colorInd="substr"
 #' @param axes c(1,2). Axes to be plotted
-#' @param indsup "ell","points" or "none"
+#' @param indSup "ell","points" or "none"
+#' @param repel if TRUE ggrepel is used for placing labels
+#' @param revertX if TRUE the xaxis is reverted
+#' @param revertY if TRUE the yaxis is reverted
+#' @param sizeText number allowing to change the size of the text
 #' @importFrom ggforce geom_circle
 #' @importFrom ggrepel geom_text_repel
-#' @importFrom utils tail
+#' @importFrom utils tail head
 #' @import ggplot2
 #' @export
 plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c(1,2),axes=c(1,2),indSup=c("ell"),repel=FALSE,revertX=FALSE,revertY=FALSE,sizeText=NULL)
