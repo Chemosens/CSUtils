@@ -9,7 +9,7 @@ CVA(
   test = "Hotelling-Lawley",
   nbDimHotelling = NULL,
   option = "TwoWayANOVA",
-  representation = "Biplot"
+  representation = "distanceBiplot"
 )
 }
 \arguments{

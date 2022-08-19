@@ -13,12 +13,14 @@
 #' @param revertX if TRUE the xaxis is reverted
 #' @param revertY if TRUE the yaxis is reverted
 #' @param sizeText number allowing to change the size of the text
+#' @param expandBiplot numeric that allows to custumize the size of variables arrows. If NULL, this parameter is optimized according to the graph.
+#' @param colorAttributeForBiplot color of attributes when type="biplot". NULL returns "bisque4"
 #' @importFrom ggforce geom_circle
 #' @importFrom ggrepel geom_text_repel
 #' @importFrom utils tail head
 #' @import ggplot2
 #' @export
-plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c(1,2),axes=c(1,2),indSup=c("ell"),repel=FALSE,revertX=FALSE,revertY=FALSE,sizeText=NULL)
+plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c(1,2),axes=c(1,2),indSup=c("ell"),repel=FALSE,revertX=FALSE,revertY=FALSE,sizeText=NULL,expandBiplot=1,colorAttributeForBiplot=NULL)
 {
   x=y=product=name=x0=y0=r=NULL
   dataType=respcagg$dataType
@@ -49,8 +51,7 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
 
     if(text)
     {
-      print(indiv[1,])
-      gg=ggplot(indiv,aes(x=x,y=y,color=product,group=product,label=name))+     theme_bw()+     geom_hline(yintercept=0)+     geom_vline(xintercept=0)
+      gg=ggplot(indiv,aes(x=x,y=y,color=product,group=product,label=name))+     theme_bw()+     geom_hline(yintercept=0,color="grey")+     geom_vline(xintercept=0,color="grey")
       if(is.null(sizeText))
       {
         print("size")
@@ -62,7 +63,7 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
     }
     if(!text)
     {
-      gg=ggplot(indiv,aes(x=x,y=y,color=product,group=product,label=name))+   geom_point()+     theme_bw()+     geom_hline(yintercept=0)+     geom_vline(xintercept=0)
+      gg=ggplot(indiv,aes(x=x,y=y,color=product,group=product,label=name))+   geom_point()+     theme_bw()+     geom_hline(yintercept=0,color="grey")+     geom_vline(xintercept=0,color="grey")
     }
 
     if(dataType=="productMeans")
@@ -107,8 +108,8 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
       gg=ggplot(indiv,aes(x=x,y=y,name=name,label=name))+
         geom_point()+
         theme_bw()+
-        geom_hline(yintercept=0)+
-        geom_vline(xintercept=0)+ggforce::geom_circle(data=circle,aes(x0=x0,y0=y0,r=r),color="grey",inherit.aes=FALSE)+ggtitle("Variable map")
+        geom_hline(yintercept=0,color="grey")+
+        geom_vline(xintercept=0,color="grey")+ggforce::geom_circle(data=circle,aes(x0=x0,y0=y0,r=r),color="grey",inherit.aes=FALSE)+ggtitle("Variable map")
       if(is.null(sizeText)){gg=gg+ geom_text_repel()}else{gg=gg+    geom_text_repel(size=sizeText)}
 
       }
@@ -121,8 +122,8 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
       gg=ggplot(indiv,aes(x=x,y=y,name=name,label=name))+
         geom_point()+
         theme_bw()+
-        geom_hline(yintercept=0)+
-        geom_vline(xintercept=0)+ggforce::geom_circle(data=circle,aes(x0=x0,y0=y0,r=r),color="grey",inherit.aes=FALSE)+ggtitle("Variable map")
+        geom_hline(yintercept=0,color="grey")+
+        geom_vline(xintercept=0,color="grey")+ggforce::geom_circle(data=circle,aes(x0=x0,y0=y0,r=r),color="grey",inherit.aes=FALSE)+ggtitle("Variable map")
     }
     return(gg)
   }
@@ -159,7 +160,7 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
     ylab=paste0("Axis",axes[2]," (",round(pct_y,digits=2),"%)")
     gg=gg+xlab(xlab)+ylab(ylab) +ggtitle(paste0("Biplot (", round(pct_x+pct_y,digits=2),"%)"))
     vardf=respcagg$varCoord[respcagg$varCoord[,"axes"]==paste(axes[1],axes[2],sep=","),]
-
+    vardf[,c("x","y")]= vardf[,c("x","y")]*expandBiplot
     if(revertX){vardf[,axes[1]]=-vardf[,axes[1]]}
     if(revertY){vardf[,axes[2]]=-vardf[,axes[2]]}
     gg=gg+
@@ -168,7 +169,8 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
       geom_hline(yintercept=0,color="grey")+
       geom_vline(xintercept=0,color="grey")
     print(head(vardf))
-    if(is.null(sizeText)){gg=gg+  geom_text(data=vardf,aes(x=x,y=y,label=name),color="bisque4")    }else{gg=gg+        geom_text(data=vardf,aes(x=x,y=y,label=name),color="bisque4",size=sizeText)    }
+    if(is.null(colorAttributeForBiplot)){colorAttributeForBiplot="bisque4"}
+    if(is.null(sizeText)){gg=gg+  geom_text(data=vardf,aes(x=x,y=y,label=name),color=colorAttributeForBiplot)    }else{gg=gg+        geom_text(data=vardf,aes(x=x,y=y,label=name),color=colorAttributeForBiplot,size=sizeText)    }
     dataSegment=as.data.frame(vardf[,c("x","y")])
     dataSegment[,"xend"]=0
     dataSegment[,"yend"]=0
@@ -177,13 +179,13 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
 
     if(text)
     {
-      gg=gg +     theme_bw()+     geom_hline(yintercept=0)+     geom_vline(xintercept=0)
+      gg=gg +     theme_bw()+     geom_hline(yintercept=0,color="grey")+     geom_vline(xintercept=0,color="grey")
       if(is.null(sizeText)){gg=gg+  geom_text()}else{gg=gg+  geom_text(size=sizeText)}
 
     }
     if(!text)
     {
-      gg=gg +   geom_point()+     theme_bw()+     geom_hline(yintercept=0)+     geom_vline(xintercept=0)
+      gg=gg +   geom_point()+     theme_bw()+     geom_hline(yintercept=0,color="grey")+     geom_vline(xintercept=0,color="grey")
     }
     if(dataType=="productMeans")
     {

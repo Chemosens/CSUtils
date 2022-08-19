@@ -16,7 +16,9 @@ plotPCAgg(
   repel = FALSE,
   revertX = FALSE,
   revertY = FALSE,
-  sizeText = NULL
+  sizeText = NULL,
+  expandBiplot = 1,
+  colorAttributeForBiplot = NULL
 )
 }
 \arguments{
@@ -43,6 +45,10 @@ plotPCAgg(
 \item{revertY}{if TRUE the yaxis is reverted}
 
 \item{sizeText}{number allowing to change the size of the text}
+
+\item{expandBiplot}{numeric that allows to custumize the size of variables arrows. If NULL, this parameter is optimized according to the graph.}
+
+\item{colorAttributeForBiplot}{color of attributes when type="biplot". NULL returns "bisque4"}
 }
 \description{
 Plots a pca from pcagg

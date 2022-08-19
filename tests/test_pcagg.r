@@ -20,8 +20,9 @@ df_rsh[,"rep"]=1
 
 respca_cor=PCAgg(df_rsh[,-5],option="Correlation",representation="DistanceBiplot")
 respcagg_cov=PCAgg(df_rsh[,-5],representation="DistanceBiplot")
+respcagg_cov=PCAgg(df_rsh[,-5],representation="DistanceBiplot")
 
-plotPCAgg(respcagg_cov,indSup=c("ell","points"))
+plotPCAgg(respcagg_cov,indSup=c("ell","points"),expandBiplot=0.2)
 plotPCAgg(respca_cor,indSup=c("ell","points"))
 plotPCAgg(respca_cor,indSup=c("ell","points"),type="biplot")
 plotPCAgg(respcagg_cov,indSup=c("ell","points"),type="biplot")

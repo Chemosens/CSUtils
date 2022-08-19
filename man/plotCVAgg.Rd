@@ -14,7 +14,10 @@ plotCVAgg(
   substrVec = c(1, 2),
   axes = c(1, 2),
   indSup = c("ell"),
-  repel = FALSE
+  repel = FALSE,
+  revertX = FALSE,
+  revertY = FALSE,
+  sizeText = NULL
 )
 }
 \arguments{
@@ -35,6 +38,12 @@ plotCVAgg(
 \item{indSup}{"ell","points" or "none"}
 
 \item{repel}{if TRUE, ggrepel is used to place the labels}
+
+\item{revertX}{if TRUE the xaxis is reverted}
+
+\item{revertY}{if TRUE the yaxis is reverted}
+
+\item{sizeText}{number allowing to change the size of the text}
 }
 \description{
 plotCVAgg

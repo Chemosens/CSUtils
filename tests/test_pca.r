@@ -19,6 +19,12 @@ resbiplot_raw=PCA(extendedData,option="Covariance",dataType="raw",representation
 respca2=PCA(extendedData2,representation="twoMaps")
 apply(respca$VarCoord^2,1,sum)
 
+test_that("Distance Biplot and PCA have same representations when dataType is productMeans",
+          expect_true(
+max(respca2$IndivCoord-resbiplot$IndivCoord)<1e-12
+          ))
+
+
 test_that("raw similar to usual when only product columns",
           expect_true(
 all.equal(respca[1:9],respca_raw[1:9])

@@ -11,7 +11,7 @@
 #' @importFrom stats pchisq lm manova cor reshape aggregate  sd
 #' @importFrom utils combn
 #' @export
-CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="TwoWayANOVA", representation="Biplot") {
+CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="TwoWayANOVA", representation="distanceBiplot") {
 
 #  extendedData=reshape2::dcast(df, Subject+Product+Rep~Attribute,mean)
 
@@ -235,7 +235,7 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
   # Getting individuals and scoreName
   individuals=matrixOfCenteredProduct%*%eigVec
   rownames(individuals)=rownames(matrixOfCenteredProduct)
-  variables=cor(matrixOfCenteredProduct,individuals)
+  varCor=cor(matrixOfCenteredProduct,individuals)
 
   # Transformation des individus et scoreName pour le biplot
   biplot=FALSE
@@ -268,7 +268,7 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
     variables[,1:nbAxes]=V[,1:nbAxes] # ce sont les loadings
     CenteredProductSubjectTable[,3:dim(CenteredProductSubjectTable)[2]]=matrixOfCenteredProductSubject%*%solve(wDemi)
   }
-
+  else{variables=varCor}
   gettingAppropriateData=function(selectedData ,asMatrix=FALSE, scoreName="Variable", productName="Product",subjectName="Subject",attributeName="Attribute",replicateName="Rep",replaceMode="crossmean",scaleUnit=FALSE)
   {
     # Transforms a canonical data into a extended data and averages on product*subject
@@ -333,8 +333,9 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
   if(option!="MAM"&& option!="MultiMAM"&&option!="TwoWayWithoutTakingSubjectEffectIntoEllipses") {
     tabtot=hotellingTable(matCva=CenteredProductSubjectTable,vep=eigVec[,1:nbAxes],axes=c(1:nbDimHotelling),colAttributes=3:dim(CenteredProductSubjectTable)[2],productName="product")
   }
-  res.CVA=list(IndivCoord=individuals,VarCoord=variables,NbDimSig=nbDimSig,HotellingTable=tabtot,ConditioningOfW=ConditioningOfW,B=SSProd,W=SSres,EigenVectors=eigVec,EigenValues=eigVal,Stats=statResults,decomposition=decomposition,IndSup=CenteredProductSubjectTable ,nbAxes=nbAxes,wDemi=wDemi,option=option,representation=representation,ExtendedData=extendedData)
-  return (res.CVA)
+  res.CVA=list(IndivCoord=individuals,VarCoord=variables,VarCor=varCor,NbDimSig=nbDimSig,HotellingTable=tabtot,ConditioningOfW=ConditioningOfW,B=SSProd,W=SSres,EigenVectors=eigVec,EigenValues=eigVal,Stats=statResults,decomposition=decomposition,IndSup=CenteredProductSubjectTable ,nbAxes=nbAxes,wDemi=wDemi,option=option,representation=representation,ExtendedData=extendedData)
+
+   return (res.CVA)
 
 }
 
