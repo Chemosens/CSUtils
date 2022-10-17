@@ -2,7 +2,7 @@
 PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,correctOnlyIfSignificant=FALSE,limitOfSignificance=0.05,onlySignificantDim=FALSE,manovaTest="Hotelling", panelistPerf=FALSE,correlationTest="none",multidimLine=FALSE,fisherRatio=FALSE,levelOption=FALSE,whenOverallUseMAMForTest=FALSE)
 {# frame est de la forme "subjectCode","prod","rep", att1,... attP
 	#LoadPackage("doBy")
-	
+
 	attnames       =  labels(frame)[[2]][-1:-3]                    ; natt  = length(attnames)                                                          # Save the attribute names and number.
 	ass            =  factor(as.character(frame[,1])) ; assnames  = levels(ass)  ; nass  = length(assnames)                                                          # Define as factor, save level names (alphanum.) and #.
 	prod           =  factor(frame[,2]) ; prodnames = levels(prod) ; nprod = length(prodnames)                                                         #                          -"-
@@ -13,7 +13,7 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 	if((correlationTest=="pearson"|correlationTest=="kendall"|correlationTest=="spearman") & nprod<3){print("Not enough products for correlations");correlationTest="none"}
 
 	ListResults=MultiMAM(frame=as.data.frame(frame), modelType=modelType,negativeCorrection=negativeCorrection,correctOnlyIfSignificant=correctOnlyIfSignificant,limitOfSignificance=limitOfSignificance,plotReg=FALSE)
-	
+
 	if(modelType=="overall")
 	{
 		ListResultsMAMmultivariate=MultiMAM(frame=frame, modelType="mam",negativeCorrection=negativeCorrection,correctOnlyIfSignificant=correctOnlyIfSignificant,limitOfSignificance=limitOfSignificance,plotReg=FALSE)
@@ -24,15 +24,15 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 		CorrectedBeta=apply(UsualBeta,2,"/",ListResults$Beta)
 		if(whenOverallUseMAMForTest){ListResultsToUse=ListResultsMAMmultivariate}else{ListResultsToUse=ListResults}
 	}
-	#added 
+	#added
 	else
 	{
 		ListResultsToUse=ListResults
 		UsualBeta=ListResults$Beta
 		sigMultiBeta=NULL
 	}
-	#/added 
-	
+	#/added
+
 	scalingCoefficient=ListResultsToUse$Beta
 	matriceScaling=ListResultsToUse$scalMat
 	matriceProd=ListResultsToUse$prodMat
@@ -45,19 +45,19 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 	#PanelProd=nrep*nass*t(matriceProd)%*%(matriceProd)
 
 	PanelScal=nrep*t(matriceScaling)%*%matriceScaling
-	PanelDisag=nrep*t(matriceDisag)%*%matriceDisag	
+	PanelDisag=nrep*t(matriceDisag)%*%matriceDisag
 	PanelInter=nrep*t(matriceInter)%*%matriceInter
 	PanelError=t(matriceError)%*%matriceError
 	###############################
 	# Getting degrees of freedom
 	###############################
-	
+
 	if(modelType=="overall"){disagDF=(nprod-2)*(nass-1)}
 	if(modelType=="classic"){disagDF=(nprod-1)*(nass-1)}
 	if(modelType=="mam")
 	{
 		if(negativeCorrection)
-		{ # disagDF is the degrees of freedom for the modified (interOrDisag) interaction whereas disagDF2 is the degree of freedom for the classical MAM disagreement
+		{ # disagDF is the degrees sof freedom for the modified (interOrDisag) interaction whereas disagDF2 is the degree of freedom for the classical MAM disagreement
 			if(correctOnlyIfSignificant)
 			{
 				scalingDisc=sum(scalPval<limitOfSignificance,na.rm=TRUE)
@@ -69,12 +69,12 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 				disagDF=(nprod-2)*(nass-1)+mean(nNeg)
 				scalingDF=(nass-1)-mean(nNeg)
 			}
-		  
+
 		}
 		else
 		{
 			if(correctOnlyIfSignificant)
-			{	
+			{
 				scalingDisc=sum(scalPval<limitOfSignificance,na.rm=TRUE)
 				disagDF=(scalingDisc/natt)*((nprod-2)*(nass-1))+(1-scalingDisc/natt)*(nprod-1)*(nass-1)
 				scalingDF=(scalingDisc/natt)*(nass-1)
@@ -88,12 +88,12 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 	}
 	#For CVA
 		tryCatch({
-		multiPanelDiscrimination=Manova(P=PanelProd,R=PanelDisag,disagDF,test=manovaTest) 
-		multiPanelDisagreement=Manova(P=PanelDisag,R=PanelError,nass*nprod*(nrep-1),test=manovaTest) 
-		multiPanelScaling=Manova(PanelScal,PanelDisag,disagDF,test=manovaTest) 
+		multiPanelDiscrimination=Manova(P=PanelProd,R=PanelDisag,disagDF,test=manovaTest)
+		multiPanelDisagreement=Manova(P=PanelDisag,R=PanelError,nass*nprod*(nrep-1),test=manovaTest)
+		multiPanelScaling=Manova(PanelScal,PanelDisag,disagDF,test=manovaTest)
 		},error=function(e){print(e);stop("[TS] Missing values in the dataset: the dataset is unbalanced")})
-	
-	
+
+
 	if(modelType=="mam"||modelType=="overall")
 	{
 		multiPanelPerformances=matrix(NA,4,3);rownames(multiPanelPerformances)=c("discrimination","scaling","agreement","repeatability")
@@ -108,7 +108,7 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 	multiPanelPerformances["discrimination","f"]=round(Re(multiPanelDiscrimination$f),digits=3)
 	multiPanelPerformances["discrimination","stat"]=round(Re(multiPanelDiscrimination$stat),digits=3)
 	multiPanelPerformances["discrimination","pvalue"]=round(Re(multiPanelDiscrimination$pvalue),digits=4)
-	
+
 	multiPanelPerformances["agreement","stat"]=round(Re(multiPanelDisagreement$stat),digits=3)
 	multiPanelPerformances["agreement","f"]=round(Re(multiPanelDisagreement$f),digits=3)
 	multiPanelPerformances["agreement","pvalue"]=round(Re(multiPanelDisagreement$pvalue),digits=4)
@@ -117,8 +117,8 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 		multiPanelPerformances["scaling","stat"]=round(Re(multiPanelScaling$stat),digits=3)
 		multiPanelPerformances["scaling","f"]=round(Re(multiPanelScaling$f),digits=3)
 		multiPanelPerformances["scaling","pvalue"]=round(Re(multiPanelScaling$pvalue),digits=4)
-	}	
-	
+	}
+
 	# Performances unidimensionelles du Panel et des pan?listes
 	avgPanel=rep(NA,natt);names(avgPanel)=attnames
 	FsujPanel=rep(NA,natt); names(FsujPanel)=attnames
@@ -157,17 +157,17 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 		SSdisag=t(decompositionByDescr[,"Disag"])%*%decompositionByDescr[,"Disag"];if(modelType!="classic"){if(negativeCorrection){DFdisag=(nprod-2)*(nass-1)+nNeg[d]}else{DFdisag=(nprod-2)*(nass-1)}}else{DFdisag=(nprod-1)*(nass-1)}
 		SSerror=t(decompositionByDescr[,"err"])%*%decompositionByDescr[,"err"];DFerror=nprod*nass*(nrep-1)
 		avgPanel[d]=mean(decompositionByDescr[,"X.mean"],na.rm=TRUE)
-		FdiscrPanel[d]=(SSprod/DFprod)/(SSdisag/DFdisag);PdiscrPanel[d]=pf(FdiscrPanel[d],DFprod,DFdisag,lower.tail=FALSE) 
-		FsujPanel[d]=(SSsuj/DFsuj)/(SSdisag/DFdisag);PsujPanel[d]=pf(FsujPanel[d],DFsuj,DFdisag,lower.tail=FALSE) 
-	
+		FdiscrPanel[d]=(SSprod/DFprod)/(SSdisag/DFdisag);PdiscrPanel[d]=pf(FdiscrPanel[d],DFprod,DFdisag,lower.tail=FALSE)
+		FsujPanel[d]=(SSsuj/DFsuj)/(SSdisag/DFdisag);PsujPanel[d]=pf(FsujPanel[d],DFsuj,DFdisag,lower.tail=FALSE)
+
 		FscalPanel[d]=(SSscal/DFscal)/(SSdisag/DFdisag);PscalPanel[d]=pf(FscalPanel[d],DFscal,DFdisag,lower.tail=FALSE)
 		FdisagPanel[d]=(SSdisag/DFdisag)/(SSerror/DFerror);PdisagPanel[d]=pf(FdisagPanel[d],DFdisag,DFerror,lower.tail=FALSE)
 		PerrPanel[d]=sqrt(SSerror/DFerror)
-		
+
 		listAnova[[attnames[d]]]=matrix(NA,5,5)
 		rownames(listAnova[[attnames[d]]])=c("Product","Subject","Scaling","Disag","Residuals")
 		colnames(listAnova[[attnames[d]]])=c("DF","SS","MS","F","P-value")
-	
+
 		listAnova[[attnames[d]]]["Product","DF"]=DFprod
 		listAnova[[attnames[d]]]["Product","SS"]=SSprod
 		listAnova[[attnames[d]]]["Product","MS"]=SSprod/DFprod
@@ -191,12 +191,12 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 		 listAnova[[attnames[d]]]["Residuals","DF"]=DFerror
 		 listAnova[[attnames[d]]]["Residuals","SS"]=SSerror
 		 listAnova[[attnames[d]]]["Residuals","MS"]=SSerror/DFerror
-		
+
 		if(modelType=="overall")
-		{	
+		{
 			decompositionM=ListResultsMAMmultivariate$decomposition
 			decompositionByDescrM=decompositionM[decompositionM[,"Attribute"]==attnames[d],]
-		}	
+		}
 
 		if(panelistPerf)
 		{
@@ -204,7 +204,7 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 			overallLevelPanelist=rep(NA,nass);names(overallLevelPanelist)=assnames
 			sigLevelPanelist=rep(NA,nass);names(sigLevelPanelist)=assnames
 			for(i in 1:nass)
-			{ 
+			{
 			# a faire : verifier les degres de libert? quand on selectionne uniquement les significatifs ou quand on a des negatifs
 			# Ca devrait marcher: en effet SSscaling=0 dans ces cas.
 				scoreOverallPanelist=as.numeric(as.matrix(frame[frame[,1]==assnames[i],4:ncol(frame)]))
@@ -214,7 +214,7 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 				sigLevelPanelist[i]=t.test(scoreOverallPanelist,scoreOverallPanel)$p.value
 				decompositionByDescrAndSuj=decompositionByDescr[decompositionByDescr[,"ass"]==assnames[i],]
 				effetProdInd=(decompositionByDescrAndSuj[,"prodEffect"]+decompositionByDescrAndSuj[,"int"])
-				SSprodi=t(effetProdInd)%*%effetProdInd;DFprodi=nprod-1 
+				SSprodi=t(effetProdInd)%*%effetProdInd;DFprodi=nprod-1
 				#anova(lm(X.mean~prod,data=decompositionByDescrAndSuj))
 				levelPanelist[d,i]=mean(decompositionByDescrAndSuj[,"X.mean"])-avgPanel[d]
 				if(modelType!="classic"){	SSscali=t(decompositionByDescrAndSuj[,"Scaling"])%*%decompositionByDescrAndSuj[,"Scaling"];DFscali=1}
@@ -227,14 +227,14 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 				meanPanelist[d,i]=mean(scorePanelist)
 				meanPanel[d,i]=mean(scorePanel)
 				tTestPanelist[d,i]=t.test(x=scorePanelist,y=scorePanel)$p.value
-			
+
 				if(nrep>1)
 				{
 					SSerrori=t(decompositionByDescrAndSuj[,"err"])%*%decompositionByDescrAndSuj[,"err"];DFerrori=nprod*(nrep-1)
 					if(SSerrori!=0)
 					{
-						FdiscrPanelist[d,i]=(SSprodi/DFprodi)/(SSerrori/DFerrori);PdiscrPanelist[d,i]=pf(FdiscrPanelist[d,i],DFprodi,DFerrori,lower.tail=FALSE)	
-					} 
+						FdiscrPanelist[d,i]=(SSprodi/DFprodi)/(SSerrori/DFerrori);PdiscrPanelist[d,i]=pf(FdiscrPanelist[d,i],DFprodi,DFerrori,lower.tail=FALSE)
+					}
 					else
 					{
 						FdiscrPanelist[d,i]=NA;PdiscrPanelist[d,i]=NA
@@ -253,17 +253,17 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 						FerrorPanelist[d,i]=(SSerrori/DFerrori);
 						FerrorTMP=(SSerrori/(nprod*(nrep-1)))/((SSerror-SSerrori)/((nass-1)*nprod*(nrep-1)))
 						PerrorPanelist[d,i]=pf(FerrorTMP,df1=nprod*(nrep-1),df2=nprod*(nrep-1)*(nass-1),lower.tail=FALSE)
-					
+
 				}
 				if(nrep==1)
 				{
 					SSerrori=t(decompositionByDescrAndSuj[,"int"])%*%decompositionByDescrAndSuj[,"int"];DFerrori=nprod-1
-					FdiscrPanelist[d,i]=NA;PdiscrPanelist[d,i]=NA	
+					FdiscrPanelist[d,i]=NA;PdiscrPanelist[d,i]=NA
 					if(modelType!="classic"){	FscalPanelist[d,i]=NA;PscalPanelist[d,i]=NA}
 					FerrorPanelist[d,i]=(SSerrori/DFerrori);
-					PerrorPanelist[d,i]=NA				
+					PerrorPanelist[d,i]=NA
 				}
-					
+
 				if(modelType=="overall")
 				{
 					decompositionByDescrAndSujM=decompositionByDescrM[decompositionByDescrM[,"ass"]==assnames[i],]
@@ -298,9 +298,9 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 					PdisagPanelist[d,i]=corTest$p.value
 				}
 			}
-		
+
 		}
-		
+
 	}
 	if(levelOption)
 
@@ -312,25 +312,25 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 		names(listPanelistPerf)=c("level","levelTTest","Fdiscr","Pdiscr","Fscal","Pscal","Fdisag","Pdisag","MSError","Perror","overallLevelPanelist","sigLevelPanelist","overallLevelPanel","meanPanelist","meanPanel","sigOverallTTest","sigOverallMean","overallScaling","sigOverallScaling","usualScaling")
 		listPanelPerf=list(avgPanel,FdiscrPanel,PdiscrPanel,FsujPanel,PsujPanel,FscalPanel,PscalPanel,FdisagPanel,PdisagPanel,PerrPanel)
 		names(listPanelPerf)=c("avg","Fdiscr","Pdiscr","Fsuj","Psuj","Fscal","Pscal","Fdisag","Pdisag","SRMSError")
-	
-		
+
+
 		}
 		else
 		{listPanelistPerf=list(levelPanelist,FdiscrPanelist,PdiscrPanelist,FscalPanelist,PscalPanelist,FdisagPanelist,PdisagPanelist,FerrorPanelist,PerrorPanelist)
 			names(listPanelistPerf)=c("avg","Fdiscr","Pdiscr","Fscal","Pscal","Fdisag","Pdisag","MSError","Perror")
 			listPanelPerf=list(avgPanel,FdiscrPanel,PdiscrPanel,FscalPanel,PscalPanel,FdisagPanel,PdisagPanel,PerrPanel)
 			names(listPanelPerf)=c("avg","Fdiscr","Pdiscr","Fscal","Pscal","Fdisag","Pdisag","SRMSError")
-	
+
 		}
-	
+
 	L=list(multiPanelPerformances,ListResults$decomposition,PanelDisag,listPanelPerf,listAnova)
-	
-	
+
+
 	names(L)=c("multiPanelPerformances","decomposition","matW","listPanelPerf","listAnova")
-	
+
 	if(modelType=="overall"||modelType=="mam")
-	{	
-			L[["Beta"]]=t(scalingCoefficient)	
+	{
+			L[["Beta"]]=t(scalingCoefficient)
 	}
 	if(fisherRatio)
 	{
@@ -361,7 +361,7 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 		L[["RapportFisherPanelist"]]=RapportFisherPanelist
 	## Fin de l'essai ]
 	}
-	
+
 	if(panelistPerf){L[["tTest"]]=tTestPanelist;L[["listPanelistPerf"]]=listPanelistPerf;}
 	if(modelType=="overall"){L[["CorrectedBeta"]]=t(CorrectedBeta);L[["UsualBeta"]]=t(UsualBeta)}
 	return(L)

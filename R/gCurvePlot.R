@@ -9,16 +9,32 @@
 #' @import ggplot2
 #' @inheritParams gBasePlot
 #' @return A plot of class ggplot.
-gCurvePlot=function(df, x="time", y="score", color="descriptor", highlight="", smooth=TRUE, ...) {
+gCurvePlot=function(df, x="time", y="score", color="descriptor", highlight="", smooth=TRUE, ...)
+  {
   curves=gBasePlot(...) +
     scale_x_continuous(expand = c(0, 0))
   if (smooth==TRUE)
   {
-    curves = curves + geom_smooth(data = df, aes_string(x = x, y = y,color=color), span = 0.1, se = FALSE, size=0.5, method = "loess", span = 0.1)
+    if(is.null(colors))
+    {
+      curves = curves + geom_smooth(data = df, aes_string(x = x, y = y,color=color), span = 0.1, se = FALSE, size=0.5, method = "loess", span = 0.1)
+    }
+    if(!is.null(colors))
+    {
+      curves = curves + geom_smooth(data = df, aes_string(x = x, y = y,color=color), span = 0.1, se = FALSE, size=0.5, method = "loess", span = 0.1)+scale_color_manual(values=colors)
+    }
   }
   else
   {
-    curves = curves + geom_line(data = df, aes_string(x = x, y = y,color=color))
+    if(is.null(colors))
+    {
+      curves = curves + geom_line(data = df, aes_string(x = x, y = y,color=color))
+    }
+    else
+    {
+
+      curves = curves + geom_line(data = df, aes_string(x = x, y = y,color=color)) +scale_color_manual(values=colors)
+    }
   }
 
   if (highlight!="") {
