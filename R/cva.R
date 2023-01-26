@@ -11,7 +11,7 @@
 #' @importFrom stats pchisq lm manova cor reshape aggregate  sd
 #' @importFrom utils combn
 #' @export
-CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="TwoWayANOVA", representation="distanceBiplot") {
+CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="TwoWayANOVA", representation="biplot") {
 
 #  extendedData=reshape2::dcast(df, Subject+Product+Rep~Attribute,mean)
 
@@ -37,8 +37,7 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
     }
     return(k-1)
   }
-
-  if(!(option%in%c("OneWayANOVA","TwoWayANOVA","MAM","MultiMAM","TwoWayWithoutTakingSubjectEffectIntoEllipses")))
+  if(!(option%in%c("OneWayANOVA","TwoWayANOVA","MAM","MultiMAM","TwoWayWithoutTakingSubjectEffectIntoEllipses","OneWayANOVAMod")))
   {
     stop("Option does not exist. Please choose between OneWayANOVA,Two-Way ANOVA, MAM or MultiMAM.")
   }
@@ -86,7 +85,7 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
   statPval=NULL
 
   # Choose the MANOVA model
-  if(option=="OneWayANOVA")
+  if(option=="OneWayANOVAMod")
   {
     SSProd=t(matrixOfCenteredProduct)%*%matrixOfCenteredProduct
     SSTotal=t(matrixOfCenteredProductSubject)%*%matrixOfCenteredProductSubject
@@ -110,9 +109,29 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
       statF=performances[1,3]
       statPval=performances[1,6]
     }
-  } else {
-    if(option=="TwoWayANOVA")
-    {
+  }
+  if(option=="OneWayANOVA")
+  {
+    centeredData=scale(extendedData[, attributes],scale=F)
+    SSProd = nbSubjects *nbReplicates* t(matrixOfCenteredProduct) %*% matrixOfCenteredProduct
+    SSTotal = t(centeredData) %*% centeredData
+    SSres = SSTotal - SSProd
+    if (det(SSres) <= 2.2e-16) {
+      L = list()
+      L[[1]] = det(SSres)
+      names(L) = c("Det")
+      return(L)
+      stop("Non invertible matrix")
+    }
+    Y = as.matrix(centeredData)
+    Product = as.factor(extendedData[, "product"])
+    performances = summary(manova(lm(Y ~ Product)), test = test)$stats
+    statTest = performances[1, 2]
+    statF = performances[1, 3]
+    statPval = performances[1, 6]
+  }
+  if(option=="TwoWayANOVA")
+  {
       SSProd=nbSubjects*t(matrixOfCenteredProduct)%*%matrixOfCenteredProduct
       SSTotal=t(matrixOfCenteredProductSubject)%*%matrixOfCenteredProductSubject
       SSsujet=nbProducts*t(matrixOfCenteredSubject)%*%matrixOfCenteredSubject
@@ -126,11 +145,11 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
         statF=performances["discrimination","f"]
         statPval=performances["discrimination","pvalue"]
       })
-    }
-    if(option=="MAM")
-    {
+  }
+  if(option=="MAM")
+  {
       SSProd=nbReplicates*nbSubjects*t(matrixOfCenteredProduct)%*%matrixOfCenteredProduct
-      dataExtended=dataExtended[,c("subject","product","rep"),attributes]
+      dataExtended=extendedData[,c("subject","product","rep",attributes)]
       resMAM=PanelPerformances(frame=dataExtended,modelType="mam",negativeCorrection=FALSE,correctOnlyIfSignificant=FALSE,limitOfSignificance=0.05,onlySignificantDim=FALSE,manovaTest="Hotelling")
       SSres=resMAM$matW
       decomposition=resMAM$decomposition
@@ -138,11 +157,11 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
       statTest=performances["discrimination","stat"]
       statF=performances["discrimination","f"]
       statPval=performances["discrimination","pvalue"]
-    }
-    if(option=="MultiMAM")
-    {
+  }
+  if(option=="MultiMAM")
+  {
       SSProd=nbReplicates*nbSubjects*t(matrixOfCenteredProduct)%*%matrixOfCenteredProduct
-      dataExtended=dataExtended[,c("subject","product","rep",attributes)]
+      dataExtended=extendedData[,c("subject","product","rep",attributes)]
       resMAM=PanelPerformances(frame=dataExtended,modelType="overall",negativeCorrection=FALSE,correctOnlyIfSignificant=FALSE,limitOfSignificance=0.05,onlySignificantDim=FALSE,manovaTest="Hotelling")
       SSres=resMAM$matW
       decomposition=resMAM$decomposition
@@ -150,9 +169,9 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
       statTest=performances["discrimination","stat"]
       statF=performances["discrimination","f"]
       statPval=performances["discrimination","pvalue"]
-    }
-    if(option=="TwoWayWithoutTakingSubjectEffectIntoEllipses")
-    {
+  }
+  if(option=="TwoWayWithoutTakingSubjectEffectIntoEllipses")
+  {
 
       SSProd=nbSubjects*t(matrixOfCenteredProduct)%*%matrixOfCenteredProduct
       SSTotal=t(matrixOfCenteredProductSubject)%*%matrixOfCenteredProductSubject
@@ -165,9 +184,9 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
       statTest=performances["discrimination","stat"]
       statF=performances["discrimination","f"]
       statPval=performances["discrimination","pvalue"]
-    }
-
   }
+
+
 
   if(is.list(option))
   {
@@ -203,9 +222,13 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
   {
     nbDimSig=getNumberOfSignificantDimensionsOfCVA(eigVal=eigVal,I=nbProducts,ddlW=(nbProducts-1)*(nbSubjects-1),p=nbAttributes,alpha=0.05)
   }
-  if(option=="OneWayANOVA")
+  if(option=="OneWayANOVAMod")
   {
     nbDimSig=getNumberOfSignificantDimensionsOfCVA(eigVal=eigVal, I=nbProducts,ddlW=nbSubjects*(nbProducts-1),p=nbAttributes,alpha=0.05)
+  }
+  if(option=="OneWayANOVA")
+  {
+    nbDimSig=getNumberOfSignificantDimensionsOfCVA(eigVal=eigVal, I=nbProducts,ddlW=nbSubjects*nbProducts*nbReplicates-nbProducts-1,p=nbAttributes,alpha=0.05)
   }
   if(option=="MultiMAM")
   {
@@ -296,6 +319,7 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
     {
       resultingTable=appropriateData
     }
+
     return(resultingTable)
   }
 
@@ -309,7 +333,7 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
   statResults[["F"]]=statF;
   statResults[["pval"]]=statPval
   tabtot=NULL
-
+  print("ok3")
   if(option=="MAM"||option=="MultiMAM") {
     decomposition[,"scoreWithoutScaling"]=decomposition[,"prodEffect"]+decomposition[,"Disag"]
     pureData=gettingAppropriateData(decomposition,scoreName="scoreWithoutScaling",subjectName="ass",replicateName="rep",productName="prod",attributeName="Attribute")
@@ -317,7 +341,7 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
     newColnamesPureData[which(colnames(pureData)=="ass")]="Subject"
     newColnamesPureData[which(colnames(pureData)=="prod")]="Product"
     colnames(pureData)=newColnamesPureData
-    tabtot=hotellingTable(matCva=pureData,vep=eigVec[,1:nbAxes],axes=c(1:nbDimHotelling),colAttributes=3:dim(CenteredProductSubjectTable)[2])
+    tabtot=hotellingTable(matCva=pureData,vep=eigVec[,1:nbAxes],axes=c(1:nbDimHotelling),colAttributes=3:dim(pureData)[2],productName="Product")
   }
 
   if(option=="TwoWayWithoutTakingSubjectEffectIntoEllipses")   {
@@ -327,7 +351,7 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
     newColnamesPureData[which(colnames(pureData)=="ass")]="Subject"
     newColnamesPureData[which(colnames(pureData)=="prod")]="Product"
     colnames(pureData)=newColnamesPureData
-    tabtot=hotellingTable(matCva=pureData,vep=eigVec[,1:nbAxes],axes=c(1:nbDimHotelling),colAttributes=3:dim(CenteredProductSubjectTable)[2])
+    tabtot=hotellingTable(matCva=pureData,vep=eigVec[,1:nbAxes],axes=c(1:nbDimHotelling),colAttributes=3:dim(CenteredProductSubjectTable)[2],productName="Product")
   }
 
   if(option!="MAM"&& option!="MultiMAM"&&option!="TwoWayWithoutTakingSubjectEffectIntoEllipses") {

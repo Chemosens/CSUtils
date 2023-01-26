@@ -1,13 +1,15 @@
 #=====================
 # Test PCAgg et plot
 #=====================
+library(FactoMineR)
 library(CSUtils)
 data(duration)
 library(testthat)
-
+durationWide=reshape(data=duration,direction="wide",timevar="descriptor",idvar=c("subject","product","rep","period"))
 # Usual cov and cor
 respcagg=PCAgg(duration)
 plotPCAgg(respcagg,type="ind",indSup=c("ell","points"))
+plotPCAgg(respcagg,type="corCircle")
 
 respcaggCor=PCAgg(duration,option="Correlation")
 plotPCAgg(respcaggCor,type="ind",indSup=c("ell","points"))

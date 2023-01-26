@@ -14,6 +14,10 @@
 #' @importFrom MuMIn r.squaredGLMM
 #' @importFrom lmerTest rand
 #' @export
+#' @examples{
+#' data(duration)
+#' anovaTable(duration,model='score~product')
+#' }
 anovaTable=function(df, model, alpha=0.05, unit="descriptor", columns=c("G_Mean","F_Product","P_Product","F_Product_Significance","SE_Product","R2","P_ShapiroWilks","P_Levene_Product","Mean_Product","Group_Product")) {
 
   tableANOVA=as.data.frame(unique(as.character(df[,unit])))
@@ -49,9 +53,9 @@ anovaTable=function(df, model, alpha=0.05, unit="descriptor", columns=c("G_Mean"
     if ("SE_Product" %in% columns) {
       tableANOVA[index,"SE_Product"]<<-round(res.cld[1,"SE"],2)
     }
-    if ("R2" %in% columns) {
-      tableANOVA[index,"R2"]<<-round(r.squaredGLMM(res)[,"R2c"],2)
-    }
+    # if ("R2" %in% columns) {
+    #   tableANOVA[index,"R2"]<<-round(r.squaredGLMM(res)[,"R2c"],2)
+    # }
     if ("P_ShapiroWilks" %in% columns) {
       tableANOVA[index,"P_ShapiroWilks"]<<-round(shapiro.test(residuals(res))$p.value,3)
     }

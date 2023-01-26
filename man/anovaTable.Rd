@@ -31,3 +31,9 @@ A dataframe.
 \description{
 Run a batch of ANOVAs and store the results in a table.
 }
+\examples{
+{
+data(duration)
+anovaTable(duration,model='score~product')
+}
+}
