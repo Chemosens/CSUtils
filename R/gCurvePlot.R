@@ -9,6 +9,7 @@
 #' @import ggplot2
 #' @inheritParams gBasePlot
 #' @return A plot of class ggplot.
+#' @export
 gCurvePlot=function(df, x="time", y="score", color="descriptor", highlight="", smooth=TRUE, ...)
   {
   curves=gBasePlot(...) +

@@ -1,4 +1,20 @@
+#'PanelPerformances
+#'@param frame a data.frame whose first colnames are subject, product, replicate, att 1, ..., attribute p
+#'@param modelType "overall" "mam" or "classic"
+#'@param negativeCorrection boolean. If TRUE, a correction is made for removing negative issue
+#'@param correctOnlyIfSignificant boolean. If TRUE, the scaling effect is corrected only when it is significant
+#'@param limitOfSignificance limit ofSignificance. Default to 0.05.
+#'@param onlySignificantDim boolean
+#'@param manovaTest "Hotelling"
+#'@param panelistPerf FALSE
+#'@param correlationTest "none"
+#'@param multidimLine FALSE
+#'@param fisherRatio FALSE
+#'@param levelOption =FALS
+#'@param whenOverallUseMAMForTest =FALSE
 #'@importFrom stats t.test cor.test
+#'@import doBy
+#'@export
 PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,correctOnlyIfSignificant=FALSE,limitOfSignificance=0.05,onlySignificantDim=FALSE,manovaTest="Hotelling", panelistPerf=FALSE,correlationTest="none",multidimLine=FALSE,fisherRatio=FALSE,levelOption=FALSE,whenOverallUseMAMForTest=FALSE)
 {# frame est de la forme "subjectCode","prod","rep", att1,... attP
 	#LoadPackage("doBy")
@@ -7,7 +23,7 @@ PanelPerformances=function(frame, modelType="overall",negativeCorrection=TRUE,co
 	ass            =  factor(as.character(frame[,1])) ; assnames  = levels(ass)  ; nass  = length(assnames)                                                          # Define as factor, save level names (alphanum.) and #.
 	prod           =  factor(frame[,2]) ; prodnames = levels(prod) ; nprod = length(prodnames)                                                         #                          -"-
 	rep            =  factor(frame[,3]) ; repnames  = levels(rep)  ; nrep  = length(repnames)                                                          #                          -"-
-	if(!(modelType%in%c("overall","classic","mam"))){stop("[TS]please choose modelType in 'overall','classic' or 'mam'")}
+	if(!(modelType%in%c("overall","classic","mam"))){stop("please choose modelType in 'overall','classic' or 'mam'")}
 	if(nprod<3){modelType="classic";print("Less than 3 products, the scaling option is impossible, classic option is run")}
 	if(nrep<2){modelType="classic";print("Less than 2 replicates, the scaling option is impossible, classic option is run")}
 	if((correlationTest=="pearson"|correlationTest=="kendall"|correlationTest=="spearman") & nprod<3){print("Not enough products for correlations");correlationTest="none"}

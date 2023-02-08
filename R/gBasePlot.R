@@ -19,6 +19,7 @@
 #' @importFrom stats reformulate
 #' @importFrom stringr str_pad
 #' @keywords internal
+#' @export
 #gBasePlot=function(title="", facet="grid", rows=".", cols=".", wrap=NULL, labX = NULL, labY=NULL, grid=FALSE, labels=NULL, colors=NULL,scales="fixed",vnames=NULL) {
 gBasePlot=function(...) {
 

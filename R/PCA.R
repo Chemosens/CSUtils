@@ -16,6 +16,7 @@
 PCA=function(extendedData,dataType="productMeans", option="covariance", representation="DistanceBiplot")
 {
 
+
   adaptedRownames=function(extendedData)
   {
     if("subject"%in% colnames(extendedData))
@@ -65,7 +66,6 @@ PCA=function(extendedData,dataType="productMeans", option="covariance", represen
 
   attributs=colnames(extendedData)[-which(colnames(extendedData)%in%c("product","subject","rep"))]
   nbAttributes=length(attributs)
-  print(attributs)
 	if(nbAttributes < 2) 	{
 	  stop("Insufficient number of attributes.")
 	}

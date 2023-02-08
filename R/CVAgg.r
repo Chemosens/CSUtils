@@ -19,7 +19,7 @@ CVAgg=function(df,confInt=0.9,axes=list(c(1,2)),option="TwoWayANOVA",  represent
 
   extendedData=reshape2::dcast(df, formula=formula,fun.aggregate=mean,value.var="score")
   resCva=CVA(extendedData, option=option,  representation=representation,nbDimHotelling=nbDimHotelling)
-
+  indSup=NULL
   for (i in 1:length(axes) )
   {
       axes_tmp=axes[[i]]
@@ -36,20 +36,22 @@ CVAgg=function(df,confInt=0.9,axes=list(c(1,2)),option="TwoWayANOVA",  represent
       dfvar[,"x"]=expand.conseil*dfvar[,"x"];dfvar[,"y"]=expand.conseil*dfvar[,"y"]
       varCoord=rbind(varCoord,dfvar)
       indivEllipsesCoord=rbind(indivEllipsesCoord,dfell);
-
+      indSup=rbind(indSup,resEllipse$indivCoord)
       dfinertia=data.frame(x=round(100*resCva$EigenValues[axes_tmp[1]]/sum(resCva$EigenValues),digits=0),y=round(100*resCva$EigenValues[axes_tmp[2]]/sum(resCva$EigenValues),digits=0),axes=paste(axes_tmp[1],axes_tmp[2],sep=","))
       inertia=rbind(inertia,dfinertia)
     }
 #  }
+  listCoord$stats=resCva$Stats
   listCoord$indivCoord=indivCoord;
   listCoord$varCoord=varCoord
   listCoord$indivEllipsesCoord=indivEllipsesCoord;
   listCoord$inertia=inertia
   listCoord$eigenValues=resCva$EigenValues
-  listCoord$option="Covariance"
-
+  listCoord$option=option
+  listCoord$indSup=indSup
   listCoord$hotelling=resCva$HotellingTable$hotellingTable
   listCoord$nbDimSig=resCva$NbDimSig
   listCoord$nbDimHotelling=nbDimHotelling
+  listCoord$representation=representation
   return(listCoord)
 }

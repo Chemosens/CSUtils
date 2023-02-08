@@ -17,13 +17,14 @@ plotCVAgg(
   repel = FALSE,
   revertX = FALSE,
   revertY = FALSE,
-  sizeText = NULL
+  sizeText = NULL,
+  segmentsHotelling = TRUE
 )
 }
 \arguments{
 \item{respcagg}{res of PCA gg}
 
-\item{type}{"ind" for individual graph, "var" for variable graph,"cor" for univariate correlations in decreasing order with the PCA axes}
+\item{type}{"ind" for individual graph,"distanceBiplot" for biplot,  "var" for variable graph,"cor" for univariate correlations in decreasing order with the PCA axes}
 
 \item{text}{Boolean indicating whether the labels should be displayed (TRUE) or not (FALSE)}
 

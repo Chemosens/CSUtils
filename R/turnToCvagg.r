@@ -25,6 +25,7 @@ turnToCVAgg=function(resCva,axes=list(c(1,2)),representation="DistanceBiplot",ex
   #  {
       if(!is.null(resCva$IndSup))
       {
+
         resell=calculateEllipses(resCva$IndSup,resCva$EigenVectors,axes=axes_tmp,confInt=confInt,ellipseType=ellipseType,productName="product",subjectName="subject",ellipseCalculation=ellipseCalculation,bootstrap=bootstrap,nSamples=nSamples)
         dfell=resell$ellPoints
         dfindivSup=resell$indivCoord
@@ -73,5 +74,7 @@ turnToCVAgg=function(resCva,axes=list(c(1,2)),representation="DistanceBiplot",ex
   listCoord$representation=resCva$representation
   listCoord$stats=resCva$Stats
   listCoord$eigenVectors=resCva$EigenVectors
+  listCoord$hotelling=resCva$HotellingTable$hotellingTable
+  listCoord$nbDimSig=resCva$NbDimSig
   return(listCoord)
 }

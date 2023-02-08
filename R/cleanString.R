@@ -5,6 +5,7 @@
 #' @return The cleaned string.
 #' @keywords internal
 #' @importFrom stringr str_to_lower
+#' @export
 cleanString=function(x,toLower=FALSE)
 {
   # Suppression des caracteres speciaux

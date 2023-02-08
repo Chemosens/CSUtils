@@ -1,7 +1,7 @@
 #' plotCVAgg
 #' Plots the results of a CVA
 #' @param respcagg res of PCA gg
-#' @param type "ind" for individual graph, "var" for variable graph,"cor" for univariate correlations in decreasing order with the PCA axes
+#' @param type "ind" for individual graph,"distanceBiplot" for biplot,  "var" for variable graph,"cor" for univariate correlations in decreasing order with the PCA axes
 #' @param text Boolean indicating whether the labels should be displayed (TRUE) or not (FALSE)
 #' @param n number of variables to be selected in correlation graph (when type="cor")
 #' @param colorInd if type(respcagg)="raw", this parameter allows to color the individuals according to a letter in the name of individual. It can be the first one (with "first") or another subset of character ("substr") defined in substrVec
@@ -17,7 +17,7 @@
 #' @import ggplot2
 #' @importFrom ggrepel geom_text_repel
 #' @importFrom utils tail
-plotCVAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c(1,2),axes=c(1,2),indSup=c("ell"),repel=FALSE,revertX=FALSE,revertY=FALSE,sizeText=NULL)
+plotCVAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c(1,2),axes=c(1,2),indSup=c("ell"),repel=FALSE,revertX=FALSE,revertY=FALSE,sizeText=NULL,segmentsHotelling=TRUE)
 {
   x=y=product=name=x0=y0=r=NULL
    if(type=="ind")
@@ -59,17 +59,47 @@ plotCVAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
       }
        if("points"%in%indSup)
       {
-         print("in")
          indsupdat=respcagg$indSup
          indsupdat[,"name"]=paste0(indsupdat[,"subject"],"_",indsupdat[,"product"])
          gg=gg+geom_point(data=indsupdat,aes(x=x,y=y,color=product,name=name),size=1)
       }
+    if(segmentsHotelling)
+    {
+      hotelling=respcagg$hotelling
+      segHot=data.frame()
+      k=0
+      for(i in colnames(hotelling))
+      {
+        for(j in colnames(hotelling))
+        {
+          if(j!=i)
+          {
+            if(hotelling[i,j]>0.05)
+            {
+              segHot=rbind(segHot,c(x=respcagg$indivCoord[i,"x"],y=respcagg$indivCoord[i,"y"],xend=respcagg$indivCoord[j,"x"],yend=respcagg$indivCoord[j,"y"]))
+              k=k+1
+            }
+          }
+
+        }
+
+      }
+      if(k>0)
+      {
+        colnames(segHot)=c("x","y","xend","yend")
+        gg=gg+geom_segment(data=segHot,aes(x=x,y=y,xend=xend,yend=yend))
+
+      }
+    }
 
      pct_x=100*respcagg$eigenValues[axes[1]]/sum(respcagg$eigenValues)
      pct_y=100*respcagg$eigenValues[axes[2]]/sum(respcagg$eigenValues)
      xlab=paste0("Axis",axes[1]," (",round(pct_x,digits=2),"%)")
      ylab=paste0("Axis",axes[2]," (",round(pct_y,digits=2),"%)")
-     gg=gg+xlab(xlab)+ylab(ylab) +ggtitle(paste0("Individual map (", round(pct_x+pct_y,digits=2),"%)"))
+     gg=gg+xlab(xlab)+ylab(ylab) #+ggtitle(paste0("Individual map (", round(pct_x+pct_y,digits=2),"%)"))
+
+     gg=gg+ggtitle(paste0("CVA Individual map (",round(pct_x+pct_y,digits=2),"%, F=",round(as.numeric(respcagg$stats$F),digits=2),", pval=",round(as.numeric(respcagg$stats$pval),digits=3),",NdimSig=",respcagg$nbDimSig),")")
+
     return(gg)
   }
 
@@ -158,7 +188,6 @@ plotCVAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
       gg=gg +   geom_point()+     theme_bw()+     geom_hline(yintercept=0)+     geom_vline(xintercept=0)
     }
 
-
       if("ell"%in%indSup)
       {
         indivEll=respcagg$indivEllipsesCoord[respcagg$indivEllipsesCoord[,"axes"]==paste(axes[1],axes[2],sep=","),]
@@ -169,15 +198,46 @@ plotCVAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
       }
       if("points"%in%indSup)
       {
-        print("in")
-        print(names(respcagg))
         indsupdat=respcagg$indSup
-
+        colnames(indsupdat)=c("x","y","subject","product","axes")
         indsupdat[,"name"]=paste0(indsupdat[,"subject"],"_",indsupdat[,"product"])
         if(revertX){indsupdat[,"x"]=-indsupdat[,"x"]}
         if(revertY){indsupdat[,"y"]=-indsupdat[,"y"]}
         gg=gg+geom_point(data=indsupdat,aes(x=x,y=y,color=product),size=1)
       }
+      if(segmentsHotelling)
+      {
+
+        k=0
+        hotelling=respcagg$hotelling
+        segHot=data.frame()
+        for(i in colnames(hotelling))
+        {
+          for(j in colnames(hotelling))
+          {
+            if(j!=i)
+            {
+              if(hotelling[i,j]>0.05)
+              {
+                segHot=rbind(segHot,c(x=respcagg$indivCoord[i,"x"],y=respcagg$indivCoord[i,"y"],xend=respcagg$indivCoord[j,"x"],yend=respcagg$indivCoord[j,"y"]))
+                k=k+1
+              }
+            }
+
+          }
+
+        }
+        if(k>0)
+        {
+
+          colnames(segHot)=c("x","y","xend","yend")
+          gg=gg+geom_segment(data=segHot,aes(x=x,y=y,xend=xend,yend=yend))
+
+        }
+      }
+
+    gg=gg+ggtitle(paste0("CVA biplot (",round(pct_x+pct_y,digits=2),"%, F=",round(as.numeric(respcagg$stats$F),digits=2),", pval=",round(as.numeric(respcagg$stats$pval),digits=3),",NdimSig=",respcagg$nbDimSig,")"))
+
    return(gg)
   }
 

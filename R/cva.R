@@ -221,6 +221,7 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
   if(option=="TwoWayANOVA"||option=="TwoWayWithoutTakingSubjectEffectIntoEllipses")
   {
     nbDimSig=getNumberOfSignificantDimensionsOfCVA(eigVal=eigVal,I=nbProducts,ddlW=(nbProducts-1)*(nbSubjects-1),p=nbAttributes,alpha=0.05)
+
   }
   if(option=="OneWayANOVAMod")
   {
@@ -271,7 +272,8 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
 
   wDemi=rootAndVap(SSres)
 
-  if(representation %in% c("biplot","Biplot")) {
+  if(representation %in% c("distanceBiplot","DistanceBiplot","biplot","Biplot"))
+  {
     # Biplot CVA
     # Matrice Y pour le biplot
 
@@ -333,7 +335,6 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
   statResults[["F"]]=statF;
   statResults[["pval"]]=statPval
   tabtot=NULL
-  print("ok3")
   if(option=="MAM"||option=="MultiMAM") {
     decomposition[,"scoreWithoutScaling"]=decomposition[,"prodEffect"]+decomposition[,"Disag"]
     pureData=gettingAppropriateData(decomposition,scoreName="scoreWithoutScaling",subjectName="ass",replicateName="rep",productName="prod",attributeName="Attribute")

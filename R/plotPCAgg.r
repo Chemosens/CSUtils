@@ -2,7 +2,7 @@
 #'
 #' Plots a pca from pcagg
 #' @param respcagg res of PCA gg
-#' @param type "ind" for individual graph, "var" for variable graph,"cor" for univariate correlations in decreasing order with the PCA axes
+#' @param type "biplot" for distanceBiplot,"ind" for individual graph, "var" for variable graph,"cor" for univariate correlations in decreasing order with the PCA axes
 #' @param text Boolean indicating whether the labels should be displayed (TRUE) or not (FALSE)
 #' @param n number of variables to be selected in correlation graph (when type="cor")
 #' @param colorInd if type(respcagg)="raw", this parameter allows to color the individuals according to a letter in the name of individual. It can be the first one (with "first") or another subset of character ("substr") defined in substrVec
@@ -24,7 +24,7 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
 {
   x=y=product=name=x0=y0=r=NULL
   dataType=respcagg$dataType
-  match.arg(type,c("ind","corCircle","biplot","cor1","cor2","eigenValues"))
+  match.arg(type,c("ind","corCircle","biplot","cor1","cor2","eigenValues","distanceBiplot","DistanceBiplot"))
   if(type=="ind")
   {
     indiv=respcagg$indivCoord[respcagg$indivCoord[,"axes"]==paste(axes[1],axes[2],sep=","),]
@@ -54,7 +54,6 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
       gg=ggplot(indiv,aes(x=x,y=y,color=product,group=product,label=name))+     theme_bw()+     geom_hline(yintercept=0,color="grey")+     geom_vline(xintercept=0,color="grey")
       if(is.null(sizeText))
       {
-        print("size")
         gg=gg+   geom_text()
       }else
       {
@@ -83,7 +82,6 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
          indsupdat[,"name"]=paste0(indsupdat[,"subject"],"_",indsupdat[,"product"])
          if(revertX){indsupdat[,"x"]=-indsupdat[,"x"]}
          if(revertY){indsupdat[,"y"]=-indsupdat[,"y"]}
-
          gg=gg+geom_point(data=indsupdat,aes(x=x,y=y,color=product,name=name))
       }
     }
@@ -127,7 +125,7 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
     }
     return(gg)
   }
-  if(type=="biplot")
+  if(type=="biplot"||type=="distanceBiplot"||type=="DistanceBiplot"||type=="Biplot")
   {
     if(!respcagg$representation%in%c("DistanceBiplot","distanceBiplot")){stop("type='biplot' possible only when respcagg was run with representation='DistanceBiplot' or 'distanceBiplot'")}
     indiv=respcagg$indivCoord[respcagg$indivCoord[,"axes"]==paste(axes[1],axes[2],sep=","),]
@@ -151,7 +149,6 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
       indiv$product=substrVec
     }
     indiv$name=rownames(indiv)
-    print(head(indiv))
     gg=ggplot(indiv,aes(x=x,y=y,color=product,label=name))
 
     pct_x=100*respcagg$eigenValues[axes[1]]/sum(respcagg$eigenValues)
@@ -168,9 +165,10 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
       theme_bw()+
       geom_hline(yintercept=0,color="grey")+
       geom_vline(xintercept=0,color="grey")
-    print(head(vardf))
+
     if(is.null(colorAttributeForBiplot)){colorAttributeForBiplot="bisque4"}
     if(is.null(sizeText)){gg=gg+  geom_text(data=vardf,aes(x=x,y=y,label=name),color=colorAttributeForBiplot)    }else{gg=gg+        geom_text(data=vardf,aes(x=x,y=y,label=name),color=colorAttributeForBiplot,size=sizeText)    }
+
     dataSegment=as.data.frame(vardf[,c("x","y")])
     dataSegment[,"xend"]=0
     dataSegment[,"yend"]=0

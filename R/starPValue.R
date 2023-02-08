@@ -3,6 +3,7 @@
 #' @return Character.
 #' @keywords internal
 #' @importFrom stats symnum
+#' @export
 starPValue <- function(x)
   {
   return (symnum(x, corr = FALSE, na = FALSE, legend = FALSE,

@@ -4,20 +4,30 @@ data(duration)
 library(ggrepel)
 # comparison of CVA for extended data with prcomp
 extendedData=reshape2::dcast(duration, product+subject+rep~descriptor,mean)
-rescva_ow=CSUtils::CVA(extendedData,representation="twoMaps",option="OneWayANOVA")
-PlotCVAgg(rescva_ow)
-rescva_tw=CVA(extendedData,representation="twoMaps",option="TwoWayANOVA")
+rescva_ow=CVAgg(duration,representation="twoMaps",option="OneWayANOVA")
+
+rescva_tw=CVAgg(duration,representation="twoMaps",option="TwoWayANOVA")
 #rescva_tws=CVA(extendedData,representation="twoMaps",option="tws")
-rescva_mam=CVA(extendedData,representation="twoMaps",option="MAM")
-rescva_overall=CVA(extendedData,representation="twoMaps",option="MultiMAM")
+rescva_mam=CVAgg(duration,representation="twoMaps",option="MAM")
+rescva_overall=CVAgg(duration,representation="twoMaps",option="MultiMAM")
 #rescva_1w=CVA(cheeses,representation="twoMaps",option="1w")
 
-rescva_owb=CVA(extendedData,option="OneWayANOVA")
-rescva_twb=CVA(extendedData,option="TwoWayANOVA")
+
+
+rescva_owb=CVAgg(duration,option="OneWayANOVA")
+rescva_twb=CVAgg(duration,option="TwoWayANOVA")
 #rescva_twsb=CVA(extendedData,option="tws")
-rescva_mamb=CVA(extendedData,option="MAM")
-rescva_overallb=CVA(extendedData,option="MultiMAM")
-#rescva_1wb=CVA(extendedData,option="1w")
+rescva_mamb=CVAgg(duration,option="MAM")
+rescva_overallb=CVAgg(duration,option="MultiMAM")
+
+plotCVAgg(rescva_twb,type="distanceBiplot",text=TRUE,n=10,colorInd="all",substrVec=c(1,2),axes=c(1,2),indSup=c("ell"),repel=FALSE,revertX=FALSE,revertY=FALSE,sizeText=NULL)
+plotCVAgg(rescva_twb,type="distanceBiplot",text=TRUE,n=10,colorInd="all",substrVec=c(1,2),axes=c(1,2),indSup=c("ell","points"),repel=FALSE,revertX=FALSE,revertY=TRUE,sizeText=NULL)
+
+
+p=  plotCVAgg(rescva_owb,type="DistanceBiplot")
+plotCVAgg(rescva_twb)
+plotCVAgg(rescva_mamb)
+plotCVAgg(rescva_overallb)
 
 rescva1=CVA(extendedData,representation="twoMaps")
 rescva2=CVA(extendedData,nbDimHotelling=1)

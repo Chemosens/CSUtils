@@ -8,6 +8,8 @@ library(testthat)
 durationWide=reshape(data=duration,direction="wide",timevar="descriptor",idvar=c("subject","product","rep","period"))
 # Usual cov and cor
 respcagg=PCAgg(duration)
+respcagg=PCAgg(duration,axes=list(c(1,3)))
+
 plotPCAgg(respcagg,type="ind",indSup=c("ell","points"))
 plotPCAgg(respcagg,type="corCircle")
 

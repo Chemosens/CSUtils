@@ -8,7 +8,7 @@
 #' @export
 turnToPCAgg=function(resPca,axes=list(c(1,2)),representation="DistanceBiplot",expandBiplot=NULL,confInt=0.9,ellipseType="barycentric",ellipseCalculation="Chi",bootstrap=FALSE,nSamples=100)
 {
-  print("in2")
+
   dataType=resPca$dataType
   listCoord=list()
   indivCoord=varCor=NULL
@@ -22,7 +22,7 @@ turnToPCAgg=function(resPca,axes=list(c(1,2)),representation="DistanceBiplot",ex
     axes_tmp=axes[[i]]
     dfind=resPca$IndivCoord[,axes_tmp];
     dfind=as.data.frame(dfind);colnames(dfind)=c("x","y");dfind[,"name"]=rownames(resPca$IndivCoord); dfind[,"axes"]=paste(axes_tmp[1],axes_tmp[2],sep=",");
-    dfvar=resPca$VarCoord[,axes_tmp];dfvar=as.data.frame(dfvar);colnames(dfvar)=c("x","y");dfvar[,"name"]=rownames(resPca$VarCoord);print(dfvar); dfvar[,"axes"]=paste(axes_tmp[1],axes_tmp[2],sep=",");
+    dfvar=resPca$VarCoord[,axes_tmp];dfvar=as.data.frame(dfvar);colnames(dfvar)=c("x","y");dfvar[,"name"]=rownames(resPca$VarCoord); dfvar[,"axes"]=paste(axes_tmp[1],axes_tmp[2],sep=",");
     dfvarcor=resPca$VarCor[,axes_tmp];dfvarcor=as.data.frame(dfvarcor);colnames(dfvarcor)=c("x","y");dfvarcor[,"name"]=rownames(resPca$VarCor); dfvarcor[,"axes"]=paste(axes_tmp[1],axes_tmp[2],sep=",");
 
     if(dataType=="productMeans")
@@ -72,5 +72,7 @@ turnToPCAgg=function(resPca,axes=list(c(1,2)),representation="DistanceBiplot",ex
   listCoord$dataType=dataType
   listCoord$eigenValues=resPca$EigenValues
   listCoord$representation=resPca$representation
+  listCoord$indivEllipsesCoord=indivEllipsesCoord
+  listCoord$indSupCoord=indSupCoord
   return(listCoord)
 }
