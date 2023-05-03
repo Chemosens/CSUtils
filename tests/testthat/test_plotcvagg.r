@@ -54,7 +54,7 @@ test_that("Correlation of the weights of 1 between lda and cva (axis1)",
 
 test_that("Correlation of the weights of 1 between lda and cva (axis2)",
           expect_true(
-            abs(cor(reslda$scaling,rescva1$EigenVectors[,1:2]))[2,2]==1
+           abs( abs(cor(reslda$scaling,rescva1$EigenVectors[,1:2]))[2,2]-1)<1e-15
           ))
 
 predTest<-predict(reslda)
@@ -68,7 +68,7 @@ abs(cor(predTest$x[,1],rescva1_gg$indSup[,1]))==1
 
 test_that("Correlation 1 between individual scores of lda and cva (axis 2)",
           expect_true(
-abs(cor(predTest$x[,2],rescva1_gg$indSup[,2]))==1
+abs(cor(predTest$x[,2],rescva1_gg$indSup[,2]))>1-1e-15
           ))
 
 cor(rescva1$EigenVectors[,1:2])

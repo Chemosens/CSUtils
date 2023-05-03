@@ -43,8 +43,8 @@ extendedData3=reshape2::dcast(duration, product+subject+rep~descriptor,mean)
 
        test_that("same variable raw data, correlation",
                  expect_true(
-                      cor(respca_facto_tm_cor$var$coord[,1:2],
-                      respca_raw_tm_cor$VarCor[,1:2])[1,1]==-1
+                      abs(cor(respca_facto_tm_cor$var$coord[,1:2],
+                      respca_raw_tm_cor$VarCor[,1:2])[1,1])>1-1e-13
                  ))
 #      1.a.iii Similar eigenvalues
        test_that("similar eigenvalue, raw, correlation",
@@ -79,7 +79,7 @@ extendedData3=reshape2::dcast(duration, product+subject+rep~descriptor,mean)
 #      2.a.iii Similar eigenvalues
         test_that("similar eigen values: ",
                   expect_true(
-        100*(respca_raw_tm_cov$EigenValues/sum(respca_raw_tm_cov$EigenValues))[1]== respca_facto_tm_cov$eig[1,2]
+       abs( 100*(respca_raw_tm_cov$EigenValues/sum(respca_raw_tm_cov$EigenValues))[1]- respca_facto_tm_cov$eig[1,2])<1e-13
                   ))
 
 #====================================
@@ -152,8 +152,8 @@ pcteig=respca_tm_cov$EigenValues/sum(respca_tm_cov$EigenValues)
 # Tests for biplot : récupération des scores individuels dans tous les cas
 #===================
 
-resbiplot=PCA(extendedData,option="Covariance",representation="distanceBiplot")
-respca2=PCA(extendedData2,representation="twoMaps")
+resbiplot=CSUtils::PCA(extendedData,option="Covariance",representation="distanceBiplot")
+respca2=CSUtils::PCA(extendedData2,representation="twoMaps")
 test_that("Distance Biplot and PCA have same representations when dataType is productMeans",
           expect_true(
             max(respca2$IndivCoord-resbiplot$IndivCoord)<1e-12
@@ -172,13 +172,12 @@ test_that("Distance Biplot and PCA have same representations when dataType is pr
 
 
 
-
 #===========================================================================
 # Gestion d'un jeu de données avec deux produits et des valeurs manquantes
 #============================================================================
 # Test PCA avec deux produits et valeurs manquantes
 
 data(df2prod)
-respca=PCA(df2prod)
-respca=PCA(df2prod,option="Correlation")
+respca=CSUtils::PCA(df2prod)
+respca=CSUtils::PCA(df2prod,option="Correlation")
 

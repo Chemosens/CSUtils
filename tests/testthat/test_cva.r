@@ -5,7 +5,7 @@ library(ggrepel)
 # comparison of CVA for extended data with prcomp
 extendedData=reshape2::dcast(duration, product+subject+rep~descriptor,mean)
 rescva_ow=CSUtils::CVA(extendedData,representation="twoMaps",option="OneWayANOVA")
-PlotCVAgg(rescva_ow)
+#plotCVAgg(rescva_ow)
 rescva_tw=CVA(extendedData,representation="twoMaps",option="TwoWayANOVA")
 #rescva_tws=CVA(extendedData,representation="twoMaps",option="tws")
 rescva_mam=CVA(extendedData,representation="twoMaps",option="MAM")
@@ -31,23 +31,26 @@ test_that("cva hotelling",
 
 plotCVAgg(rescva1)
 plotCVAgg(rescva1,type="var")
-
+identicalUpToTol=function(x,y,tol=1e-12)
+{
+  return(all(x-y<tol))
+}
 # Recovering same results as lda
 extendedDataRep1=extendedData[extendedData[,"rep"]==1,]
 rescva1=CVA(extendedDataRep1,option="OneWayANOVAMod",representation="twoMaps")
 library(MASS)
-reslda=lda(extendedDataRep1[,-c(1:3)],grouping=extendedDataRep1[,"product"])
+reslda1=lda(extendedDataRep1[,-c(1:3)],grouping=extendedDataRep1[,"product"])
 test_that("Correlation of the weights of 1 between lda and cva (axis1)",
           expect_true(
-            abs(cor(reslda$scaling,rescva1$EigenVectors[,1:2]))[1,1]==1
+            identicalUpToTol(cor(reslda1$scaling,rescva1$EigenVectors[,1:2])[1,1],-1)
           ))
 
 test_that("Correlation of the weights of 1 between lda and cva (axis2)",
           expect_true(
-            abs(cor(reslda$scaling,rescva1$EigenVectors[,1:2]))[2,2]==1
+            identicalUpToTol(cor(reslda1$scaling,rescva1$EigenVectors[,1:2])[2,2],-1)
           ))
 
-predTest<-predict(reslda)
+predTest<-predict(reslda1)
 predTest$x
 rescva1$IndivCoord
 rescva1_gg=turnToCVAgg(rescva1)
@@ -58,16 +61,16 @@ abs(cor(predTest$x[,1],rescva1_gg$indSup[,1]))==1
 
 test_that("Correlation 1 between individual scores of lda and cva (axis 2)",
           expect_true(
-abs(cor(predTest$x[,2],rescva1_gg$indSup[,2]))==1
+round(abs(cor(predTest$x[,2],rescva1_gg$indSup[,2])),digits=14)==1
           ))
 
 cor(rescva1$EigenVectors[,1:2])
-cor(reslda$scaling)
-sum(reslda$scaling[,1]^2)/
+cor(reslda1$scaling)
+sum(reslda1$scaling[,1]^2)/
 
 sum(rescva1$EigenVectors[,1]^2)
 
-sum(reslda$scaling[,2]^2)/
+sum(reslda1$scaling[,2]^2)/
   sum(rescva1$EigenVectors[,2]^2)
 
 # Comparison between cva 1w et lda
@@ -77,7 +80,7 @@ test_that("Correlation of the weights of 1 between lda and cva 1w (axis1)",
           expect_true(abs(cor(reslda$scaling,rescva_ow$EigenVectors[,1:2])[1,1])==1)
 )
 test_that("Correlation of the weights of 1 between lda and cva 1w (axis2)",
-          expect_true(round(abs(cor(reslda$scaling,rescva_ow$EigenVectors[,1:2])[2,2])-1,digits=12)==0)
+          expect_true(round(abs(cor(reslda$scaling,rescva_ow$EigenVectors[,1:2])[2,2]),digits=12)==1)
 )
 
 

@@ -9,9 +9,8 @@ anovaTable(
   model,
   alpha = 0.05,
   unit = "descriptor",
-  columns = c("G_Mean", "F_Product", "P_Product", "F_Product_Significance",
-    "SE_Product", "R2", "P_ShapiroWilks", "P_Levene_Product", "Mean_Product",
-    "Group_Product")
+  columns = c("G_Mean", "F_Product", "P_Product", "F_Product_Significance", "SE_Product",
+    "R2", "P_ShapiroWilks", "P_Levene_Product", "Mean_Product", "Group_Product")
 )
 }
 \arguments{

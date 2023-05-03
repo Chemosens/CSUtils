@@ -43,14 +43,14 @@ calculateEllipses=function(suppIndividualTable,vep,axes=c(1,2),confInt=0.9,ellip
 		sujets=suppIndividualTable[suppIndividualTable[,productName]==products[i],subjectName]
 		indiv.sup[is.na(indiv.sup)]=0
 		coord.indiv.sup=indiv.sup%*%vep[,c(ax1,ax2)]
-		coorCentre[i,1]=mean(coord.indiv.sup[,ax1],na.rm=TRUE)
-		coorCentre[i,2]=mean(coord.indiv.sup[,ax2],na.rm=TRUE)
+		coorCentre[i,1]=mean(coord.indiv.sup[,1],na.rm=TRUE)
+		coorCentre[i,2]=mean(coord.indiv.sup[,2],na.rm=TRUE)
 		coorCentre[i,productName]=products[i]
 		rownames(coord.indiv.sup)=sujets
-		coord.pts[[i]]=coord.indiv.sup[,c(ax1,ax2)]
+		coord.pts[[i]]=coord.indiv.sup[,c(1,2)]
 		coord.pts2=as.data.frame(coord.pts[[i]])
-		coord.pts2[,"subject"]=rownames(coord.pts[[i]])
-		coord.pts2[,"product"]=products[i]
+		coord.pts2[,subjectName]=rownames(coord.pts[[i]])
+		coord.pts2[,productName]=products[i]
 		coord.pts2[,"axes"]=paste(axes[1],axes[2],sep=",")
 		df_coord=rbind(df_coord,coord.pts2)
 		ddlN=length(coord.pts[[i]][,1])
@@ -62,7 +62,7 @@ calculateEllipses=function(suppIndividualTable,vep,axes=c(1,2),confInt=0.9,ellip
 			for(k in 1:nSamples)
 			{
 				simul.indiv=coord.indiv.sup[sample(1:dim(coord.indiv.sup)[1],size=dim(coord.indiv.sup)[1],replace=TRUE),]
-				simulatedMeanPoint=apply(as.matrix(simul.indiv[,c(ax1,ax2)]),2,mean,na.rm=TRUE)
+				simulatedMeanPoint=apply(as.matrix(simul.indiv[,c(1,2)]),2,mean,na.rm=TRUE)
 
 				coord.mean.simul[[i]]=rbind(coord.mean.simul[[i]],simulatedMeanPoint)
 

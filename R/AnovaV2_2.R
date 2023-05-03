@@ -301,7 +301,9 @@ AnovaV2=function(dataFrame,model,randomSubject=T,correlationStructure="AR1",test
 		if(sum(abs(reslm0[[i]]$residuals))<0.0000001)
 		{
 			resAnova=NULL
-			stop(" Exact fitting in the ANOVA model. Could be due to a too small number of observations compared to the different effects. You should try another ANOVA model")
+			output[[i]][["FProd"]]=Inf
+			output[[i]][["PProd"]]=0
+			warning(" Exact fitting in the ANOVA model. Could be due to a too small number of observations compared to the different effects. You should try another ANOVA model")
 
 		} else
 		{

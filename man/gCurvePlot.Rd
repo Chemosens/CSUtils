@@ -11,6 +11,7 @@ gCurvePlot(
   color = "descriptor",
   highlight = "",
   smooth = TRUE,
+  size = 0.5,
   ...
 )
 }

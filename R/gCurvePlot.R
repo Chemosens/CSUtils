@@ -10,7 +10,7 @@
 #' @inheritParams gBasePlot
 #' @return A plot of class ggplot.
 #' @export
-gCurvePlot=function(df, x="time", y="score", color="descriptor", highlight="", smooth=TRUE, ...)
+gCurvePlot=function(df, x="time", y="score", color="descriptor", highlight="", smooth=TRUE,size=0.5, ...)
   {
   curves=gBasePlot(...) +
     scale_x_continuous(expand = c(0, 0))
@@ -18,23 +18,23 @@ gCurvePlot=function(df, x="time", y="score", color="descriptor", highlight="", s
   {
     if(is.null(colors))
     {
-      curves = curves + geom_smooth(data = df, aes_string(x = x, y = y,color=color), span = 0.1, se = FALSE, size=0.5, method = "loess", span = 0.1)
+      curves = curves + geom_smooth(data = df, aes_string(x = x, y = y,color=color,linetype=color), span = 0.1, se = FALSE, size=size, method = "loess", span = 0.1)
     }
     if(!is.null(colors))
     {
-      curves = curves + geom_smooth(data = df, aes_string(x = x, y = y,color=color), span = 0.1, se = FALSE, size=0.5, method = "loess", span = 0.1)+scale_color_manual(values=colors)
+      curves = curves + geom_smooth(data = df, aes_string(x = x, y = y,color=color,linetype=color), span = 0.1, se = FALSE, size=size, method = "loess", span = 0.1)+scale_color_manual(values=colors)
     }
   }
   else
   {
     if(is.null(colors))
     {
-      curves = curves + geom_line(data = df, aes_string(x = x, y = y,color=color))
+      curves = curves + geom_line(data = df, aes_string(x = x, y = y,linetype=color,color=color),size=size)
     }
     else
     {
 
-      curves = curves + geom_line(data = df, aes_string(x = x, y = y,color=color)) +scale_color_manual(values=colors)
+      curves = curves + geom_line(data = df, aes_string(x = x, y = y,color=color,linetype=color),size=size) +scale_color_manual(values=colors)
     }
   }
 

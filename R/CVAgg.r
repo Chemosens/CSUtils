@@ -22,10 +22,15 @@ CVAgg=function(df,confInt=0.9,axes=list(c(1,2)),option="TwoWayANOVA",  represent
   indSup=NULL
   for (i in 1:length(axes) )
   {
-      axes_tmp=axes[[i]]
+      axes_tmp=axes[[i]];
         # ellipse calculation
-      dfind=resCva$IndivCoord[,axes_tmp];dfind=as.data.frame(dfind);colnames(dfind)=c("x","y");dfind[,"name"]=rownames(resCva$IndivCoord); dfind[,"axes"]=paste(axes_tmp[1],axes_tmp[2],sep=",");
-      dfvar=resCva$VarCoord[,axes_tmp];dfvar=as.data.frame(dfvar);colnames(dfvar)=c("x","y");dfvar[,"name"]=rownames(resCva$VarCoord); dfvar[,"axes"]=paste(axes_tmp[1],axes_tmp[2],sep=",");
+      # print(axes_tmp)
+      # print(resCva$IndivCoord)
+      # print(resCva$IndivCoord[,axes_tmp])
+       dfind=resCva$IndivCoord[,axes_tmp];dfind=as.data.frame(dfind);colnames(dfind)=c("x","y");
+      dfind[,"name"]=rownames(resCva$IndivCoord); dfind[,"axes"]=paste(axes_tmp[1],axes_tmp[2],sep=",");
+      dfvar=resCva$VarCoord[,axes_tmp];dfvar=as.data.frame(dfvar);colnames(dfvar)=c("x","y");
+      dfvar[,"name"]=rownames(resCva$VarCoord); dfvar[,"axes"]=paste(axes_tmp[1],axes_tmp[2],sep=",");
       resEllipse=calculateEllipses(resCva$IndSup,resCva$EigenVectors,axes=axes_tmp,confInt=confInt,ellipseType=ellipseType,productName="product",subjectName="subject",ellipseCalculation=ellipseCalculation,bootstrap=bootstrap,nSamples=nSamples)
       dfell=resEllipse$ellPoints
       colnames(dfell)=c("x","y","name"); dfell[,"axes"]=paste(axes_tmp[1],axes_tmp[2],sep=",");

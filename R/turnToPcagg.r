@@ -21,8 +21,10 @@ turnToPCAgg=function(resPca,axes=list(c(1,2)),representation="DistanceBiplot",ex
 
     axes_tmp=axes[[i]]
     dfind=resPca$IndivCoord[,axes_tmp];
-    dfind=as.data.frame(dfind);colnames(dfind)=c("x","y");dfind[,"name"]=rownames(resPca$IndivCoord); dfind[,"axes"]=paste(axes_tmp[1],axes_tmp[2],sep=",");
-    dfvar=resPca$VarCoord[,axes_tmp];dfvar=as.data.frame(dfvar);colnames(dfvar)=c("x","y");dfvar[,"name"]=rownames(resPca$VarCoord); dfvar[,"axes"]=paste(axes_tmp[1],axes_tmp[2],sep=",");
+    dfind=as.data.frame(dfind);colnames(dfind)=c("x","y");dfind[,"name"]=rownames(resPca$IndivCoord);
+    dfind[,"axes"]=paste(axes_tmp[1],axes_tmp[2],sep=",");
+    dfvar=resPca$VarCoord[,axes_tmp];dfvar=as.data.frame(dfvar);colnames(dfvar)=c("x","y");
+    dfvar[,"name"]=rownames(resPca$VarCoord); dfvar[,"axes"]=paste(axes_tmp[1],axes_tmp[2],sep=",");
     dfvarcor=resPca$VarCor[,axes_tmp];dfvarcor=as.data.frame(dfvarcor);colnames(dfvarcor)=c("x","y");dfvarcor[,"name"]=rownames(resPca$VarCor); dfvarcor[,"axes"]=paste(axes_tmp[1],axes_tmp[2],sep=",");
 
     if(dataType=="productMeans")

@@ -18,7 +18,8 @@ PCAgg(
   ellipseType = "barycentric",
   ellipseCalculation = "Chi",
   bootstrap = FALSE,
-  nSamples = 100
+  nSamples = 100,
+  fill = NULL
 )
 }
 \arguments{
