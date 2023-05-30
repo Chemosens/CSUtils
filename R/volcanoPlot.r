@@ -5,7 +5,7 @@
 #' @export
 volcanoPlot=function(foldchange,pvalue,foldchange_threshold=2,pval_threshold=0.05,log2FC=T)
 {
-
+  lab=NULL
   interestingPval=pvalue<pval_threshold
   log2FoldChange=log(foldchange,base=2)
   interestingStat=abs(log2FoldChange)> foldchange_threshold

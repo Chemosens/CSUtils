@@ -6,12 +6,14 @@
 #' @param color Character. Name of character variable of df corresponding to the label of the curve.
 #' @param smooth Logical. if TRUE, curves are smoothed.
 #' @param highlight highlighting the curves
+#' @param size size of the curve
 #' @import ggplot2
 #' @inheritParams gBasePlot
 #' @return A plot of class ggplot.
 #' @export
 gCurvePlot=function(df, x="time", y="score", color="descriptor", highlight="", smooth=TRUE,size=0.5, ...)
   {
+  colors=NULL
   curves=gBasePlot(...) +
     scale_x_continuous(expand = c(0, 0))
   if (smooth==TRUE)

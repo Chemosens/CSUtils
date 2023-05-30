@@ -28,6 +28,8 @@ gCurvePlot(
 
 \item{smooth}{Logical. if TRUE, curves are smoothed.}
 
+\item{size}{size of the curve}
+
 \item{...}{List of additional parameters:\cr
 - title Character. Main title of the plot.\cr
 - facet Character: "" (standard ggplot), "grid" (matrix of panels) or "wrap" (wrap panel)\cr

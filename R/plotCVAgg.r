@@ -12,6 +12,7 @@
 #' @param revertX if TRUE the xaxis is reverted
 #' @param revertY if TRUE the yaxis is reverted
 #' @param sizeText number allowing to change the size of the text
+#' @param segmentsHotelling if TRUE segments are displayed when the Hotelling test is not significant
 #' @export
 #' @importFrom ggforce geom_circle
 #' @import ggplot2
@@ -19,7 +20,7 @@
 #' @importFrom utils tail
 plotCVAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c(1,2),axes=c(1,2),indSup=c("ell"),repel=FALSE,revertX=FALSE,revertY=FALSE,sizeText=NULL,segmentsHotelling=TRUE)
 {
-  x=y=product=name=x0=y0=r=NULL
+  xend=yend=x=y=product=name=x0=y0=r=NULL
    if(type=="ind")
   {
     indiv=respcagg$indivCoord[respcagg$indivCoord[,"axes"]==paste(axes[1],axes[2],sep=","),]

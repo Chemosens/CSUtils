@@ -8,7 +8,7 @@
 #' @inheritParams PCA
 #' @inheritParams calculateEllipses
 #' @export
-PCAgg=function(df,dataType="productMeans",option="Covariance",representation="DistanceBiplot",value.var="score",variable="descriptor",axes=list(c(1,2)),expandBiplot=NULL,confInt=0.9,ellipseType="barycentric",ellipseCalculation="Chi",bootstrap=FALSE,nSamples=100,fill=NULL)
+PCAgg=function(df,dataType="productMeans",option="Covariance",representation="DistanceBiplot",value.var="score",variable="descriptor",axes=list(c(1,2)),expandBiplot=NULL,confInt=0.9,ellipseType="barycentric",ellipseCalculation="Chi",bootstrap=FALSE,nSamples=100)
 {
   match.arg(option,c("Covariance","Correlation"))
   if(dataType=="productMeans")

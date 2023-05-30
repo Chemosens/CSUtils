@@ -45,6 +45,8 @@ plotCVAgg(
 \item{revertY}{if TRUE the yaxis is reverted}
 
 \item{sizeText}{number allowing to change the size of the text}
+
+\item{segmentsHotelling}{if TRUE segments are displayed when the Hotelling test is not significant}
 }
 \description{
 plotCVAgg

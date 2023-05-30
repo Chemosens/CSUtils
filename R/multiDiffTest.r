@@ -1,4 +1,6 @@
 #' @export
+#' @importFrom stats wilcox.test
+#' @importFrom dunn.test dunn.test
 multDiffTest=function(block,group,test="wilcoxon",correction="bonferoni" , gp=levels(factor(group)))
 {
   pval=rep(NA,dim(block)[2]);names(pval)=colnames(block)

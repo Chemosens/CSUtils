@@ -6,17 +6,18 @@
 #' @param lsMeansAlpha seuil pour la comparaison de moyennes post-hoc
 #' @param lsMeansAdjustment m?thode d'ajustement pour la comparaison de moyennes post-hoc
 #' @param ml  si on utilise ou pas le mod?le mixte (it?ratif)
-
 #dataFrame=data orderByF
 #colnames(dataFrame)=c("Replicate","ProductCode","SubjectCode","Y")
-#'@import lme4
-#'@import lsmeans
-#'@import sjmisc
+#'@importFrom lme4 lmer
+#'@importFrom lsmeans lsmeans
+#'@importFrom nlme lme corAR1 anova.lme
 #'@importFrom car Anova
-#'@import multcomp
+#'@importFrom multcomp glht cld contrMat mcp
+#'@importFrom stats na.omit
 #'@export
 AnovaV2=function(dataFrame,model,randomSubject=T,correlationStructure="AR1",testRep="EachRepVsPrevious",lsMeansAlpha=0.10, lsMeansAdjustment="Tukey", varianceTest="None", varianceTestAlpha=0.05, normalityTest="None", normalityTestAlpha=0.05, anovaCalculationMode="Ols")
 {
+  ProductCode=SubjectCode=Replicate=NULL
 	if(anovaCalculationMode=="Ols")
 	{
 		ml=FALSE
@@ -95,12 +96,12 @@ AnovaV2=function(dataFrame,model,randomSubject=T,correlationStructure="AR1",test
 	if (model=="ThreeWayMultiplicativeRepeated")
 	{
 		### Sujet+Produit+Rep+Interactions, mesure r?p?t?e
-		# Fixe, non test?
+		# Fixe, non teste
 		reslm0[[1]]<-lm(Y ~ ProductCode+Replicate+SubjectCode+ProductCode:SubjectCode+ProductCode:Replicate+SubjectCode:Replicate,data=dataFrame)
 		# Al?atoire
 		if (randomSubject==T)
 		{
-			LoadPackage("nlme")
+		#	LoadPackage("nlme")
 			# %SAS : valeurs diff?rentes
 			reslm[[1]]<-lme(Y~ProductCode*Replicate, random=~1|SubjectCode/ProductCode, correlation=corAR1(), data=dataFrame, na.action = (na.omit), method = "REML")
 			# Cette m?thode teste contre l'interaction double produit*sujet
@@ -124,7 +125,7 @@ AnovaV2=function(dataFrame,model,randomSubject=T,correlationStructure="AR1",test
 		{
 			# %SAS : FProd OK, les 2 autres sont l?g?rement diff?rents
 			#reslm[[1]]=lme(Y ~ ProductCode*Replicate, random = ~1|SubjectCode/ProductCode/Replicate,data=dataFrame, na.action = (na.omit), method="REML")
-			LoadPackage("lme4")
+			#LoadPackage("lme4")
 			reslm[[1]]<-lmer(Y~ProductCode+(1|SubjectCode)+Replicate+ProductCode*Replicate+(1|ProductCode:SubjectCode)+(1|Replicate:SubjectCode),data=dataFrame)
 		}
 		lsmeansEffects=c("ProductCode","Replicate")
@@ -140,7 +141,6 @@ AnovaV2=function(dataFrame,model,randomSubject=T,correlationStructure="AR1",test
 		{
 			# Non test?
 			#reslm[[1]]=lme(Y ~ ProductCode, random = ~1|SubjectCode/ProductCode,data=dataFrame, na.action = (na.omit), method="REML")
-			LoadPackage("lme4")
 			reslm[[1]]<-lmer(Y ~ ProductCode+(1|SubjectCode)+(1|ProductCode:SubjectCode), data=dataFrame)
 		}
 		lsmeansEffects=c("ProductCode")
@@ -156,7 +156,7 @@ AnovaV2=function(dataFrame,model,randomSubject=T,correlationStructure="AR1",test
 			reslm0[[i]]<-lm(Y ~ ProductCode+SubjectCode,data=subDataFrame)
 			reslm0[[i]][["Name"]]<-paste("Replicate",replicates[i])
 			resdata[[i]]=subDataFrame
-			# Al?atoire
+			# Aleatoire
 			if (randomSubject==T && ml==T)
 			{
 				# Non test?
@@ -183,7 +183,7 @@ AnovaV2=function(dataFrame,model,randomSubject=T,correlationStructure="AR1",test
 			{
 				# Non test?
 				#reslm[[i]]=lme(Y ~ Replicate, random = ~1|SubjectCode,data=subDataFrame, na.action = (na.omit), method="REML")
-				LoadPackage("lme4")
+				#LoadPackage("lme4")
 				reslm[[i]]<-lmer(Y ~ Replicate+(1|SubjectCode), data=subDataFrame)
 			}
 		}
@@ -254,7 +254,7 @@ AnovaV2=function(dataFrame,model,randomSubject=T,correlationStructure="AR1",test
 			# Contraste : chaque niveau est test? par rapport au niveau pr?c?dent
 			n=table(dataset$Replicate)
 			contrReplicate=contrMat(n, type = "Sequen")
-			res.glht=multcomp::glht(reslm, linfct = mcp(Replicate = contrReplicate),alternative=alternativeReplicate)
+			res.glht=glht(reslm, linfct = mcp(Replicate = contrReplicate),alternative=alternativeReplicate)
 			res.summary.glht=summary(res.glht)
 			ncomp=length(res.summary.glht$test$coefficients)
 			pvaluesReplicate=res.summary.glht$test$pvalues[1:ncomp]
@@ -266,7 +266,7 @@ AnovaV2=function(dataFrame,model,randomSubject=T,correlationStructure="AR1",test
 		if (testRep=="EachRepVsFirst")
 		{
 			# Contraste : chaque niveau est test? par rapport au premier niveau
-			res.glht=multcomp::glht(reslm, linfct = mcp(Replicate = "Tukey"),alternative=alternativeReplicate)
+			res.glht=glht(reslm, linfct = mcp(Replicate = "Tukey"),alternative=alternativeReplicate)
 			res.summary.glht=summary(res.glht)
 			# Tendance lin?aire si tous les estimates sont dans le m?me sens et contraste(dernier-premier) significatif
 			indice=which(names(res.summary.glht$test$tstat)==paste(tail(replicates,1),"-",replicates[1]))
@@ -446,22 +446,22 @@ AnovaV2=function(dataFrame,model,randomSubject=T,correlationStructure="AR1",test
 			output[[i]][["VarianceTestResult"]]=list()
 			if (!is.null(resAnova["ProductCode","F value"]) && !is.na(resAnova["ProductCode","F value"]))
 			{
-				output[[i]][["VarianceTestResult"]][["Product"]] = FriendlyPValue((VarianceTest(resdata[[i]], y="Y",  x="ProductCode" ,test=varianceTest))$p.value)
+				output[[i]][["VarianceTestResult"]][["Product"]] = starPValue((VarianceTest(resdata[[i]], y="Y",  x="ProductCode" ,test=varianceTest))$p.value)
 			}
 			if (!is.null(resAnova["Replicate","F value"]) && !is.na(resAnova["Replicate","F value"]))
 			{
-				output[[i]][["VarianceTestResult"]][["Replicate"]] = FriendlyPValue((VarianceTest(resdata[[i]], y="Y",  x="Replicate" ,test=varianceTest))$p.value)
+				output[[i]][["VarianceTestResult"]][["Replicate"]] = starPValue((VarianceTest(resdata[[i]], y="Y",  x="Replicate" ,test=varianceTest))$p.value)
 			}
 			if (!is.null(resAnova["SubjectCode","F value"]) && !is.null(resAnova["SubjectCode","F value"]))
 			{
-				output[[i]][["VarianceTestResult"]][["Subject"]] = FriendlyPValue((VarianceTest(resdata[[i]], y="Y",  x="SubjectCode" ,test=varianceTest))$p.value)
+				output[[i]][["VarianceTestResult"]][["Subject"]] = starPValue((VarianceTest(resdata[[i]], y="Y",  x="SubjectCode" ,test=varianceTest))$p.value)
 			}
 		}
 
 		if (normalityTest!= "None")
 		{
 			resNt=TestResidualsNormality((summary(reslm0[[i]]))$residuals, test=normalityTest)
-			output[[i]][["NormalityTest"]] = FriendlyPValue(resNt$p.value)
+			output[[i]][["NormalityTest"]] = starPValue(resNt$p.value)
 		}
 
 		# ANOVA effets al?atoire
@@ -539,7 +539,7 @@ AnovaV2=function(dataFrame,model,randomSubject=T,correlationStructure="AR1",test
 			if (normalityTest!= "None")
 			{
 				resNt=TestResidualsNormality((summary(reslm[[i]]))$residuals, test=normalityTest)
-				output[[i]][["NormalityTest"]] = FriendlyPValue(resNt$p.value)
+				output[[i]][["NormalityTest"]] = starPValue(resNt$p.value)
 			}
 		}
 
