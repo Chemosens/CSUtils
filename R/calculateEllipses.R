@@ -1,7 +1,7 @@
 #'calculateEllipses
 #'calculates the coordinates of confidence ellipses
 
-#'@param suppIndividualTable an extended data.frame with "product","subject" and as many further column as variables (descriptors) in the dataframe
+#'@param suppIndividualTable an extended data frame with "product","subject" and as many further column as variables (descriptors) in the dataframe
 #'@param vep matrix of eigenvectors obtained by PCA or CVA
 #'@param axes the two axes to be chosen for the plot
 #'@param confInt threshold for confidence intervall. A value of 0.9 (the default) for barycentric ellipses indicates that the mean is inside the ellipse at 90\%. For individual ellipses, one individual has 90\% of chances to be in the ellipse
