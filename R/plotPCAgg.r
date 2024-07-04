@@ -52,13 +52,27 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
     if(text)
     {
       gg=ggplot(indiv,aes(x=x,y=y,color=product,group=product,label=name))+     theme_bw()+     geom_hline(yintercept=0,color="grey")+     geom_vline(xintercept=0,color="grey")
-      if(is.null(sizeText))
+      if(!repel)
       {
-        gg=gg+   geom_text()
-      }else
-      {
-        gg=gg+   geom_text(size=sizeText)
+        if(is.null(sizeText))
+        {
+          gg=gg+   geom_text()
+        }else
+        {
+          gg=gg+   geom_text(size=sizeText)
+        }
       }
+      if(repel)
+      {
+        if(is.null(sizeText))
+        {
+          gg=gg+   geom_text_repel()
+        }else
+        {
+          gg=gg+   geom_text_repel(size=sizeText)
+        }
+      }
+
     }
     if(!text)
     {
@@ -167,7 +181,14 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
       geom_vline(xintercept=0,color="grey")
 
     if(is.null(colorAttributeForBiplot)){colorAttributeForBiplot="bisque4"}
-    if(is.null(sizeText)){gg=gg+  geom_text(data=vardf,aes(x=x,y=y,label=name),color=colorAttributeForBiplot)    }else{gg=gg+        geom_text(data=vardf,aes(x=x,y=y,label=name),color=colorAttributeForBiplot,size=sizeText)    }
+    if(!repel)
+    {
+      if(is.null(sizeText)){gg=gg+  geom_text(data=vardf,aes(x=x,y=y,label=name),color=colorAttributeForBiplot)    }else{gg=gg+        geom_text(data=vardf,aes(x=x,y=y,label=name),color=colorAttributeForBiplot,size=sizeText)    }
+    }
+    if(repel)
+    {
+      if(is.null(sizeText)){gg=gg+  geom_text_repel(data=vardf,aes(x=x,y=y,label=name),color=colorAttributeForBiplot)    }else{gg=gg+        geom_text_repel(data=vardf,aes(x=x,y=y,label=name),color=colorAttributeForBiplot,size=sizeText)    }
+    }
 
     dataSegment=as.data.frame(vardf[,c("x","y")])
     dataSegment[,"xend"]=0
@@ -178,7 +199,14 @@ plotPCAgg=function(respcagg,type="ind",text=TRUE,n=10,colorInd="all",substrVec=c
     if(text)
     {
       gg=gg +     theme_bw()+     geom_hline(yintercept=0,color="grey")+     geom_vline(xintercept=0,color="grey")
-      if(is.null(sizeText)){gg=gg+  geom_text()}else{gg=gg+  geom_text(size=sizeText)}
+      if(repel)
+      {
+           if(is.null(sizeText)){gg=gg+  geom_text_repel()}else{gg=gg+  geom_text_repel(size=sizeText)}
+      }
+      if(!repel)
+      {
+          if(is.null(sizeText)){gg=gg+  geom_text()}else{gg=gg+  geom_text(size=sizeText)}
+      }
 
     }
     if(!text)

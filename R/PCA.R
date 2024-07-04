@@ -15,8 +15,9 @@
 #' @importFrom stats cor aggregate sd
 PCA=function(extendedData,dataType="productMeans", option="covariance", representation="DistanceBiplot")
 {
-
-
+  match.arg(option, c("covariance","correlation","Covariance","Correlation"))
+  match.arg(representation,c("DistanceBiplot","distanceBiplot","twoMaps","TwoMaps"))
+  match.arg(dataType,c("productMeans","raw"))
   adaptedRownames=function(extendedData)
   {
     if("subject"%in% colnames(extendedData))
@@ -54,9 +55,7 @@ PCA=function(extendedData,dataType="productMeans", option="covariance", represen
 
     return(list(differentsSujets=differentsSujets,differentesRep=differentesRep,newRownames=newRownames))
   }
-
 	scaleUnit=FALSE
-
   if(option=="correlation"||option=="Correlation") {
 		scaleUnit=TRUE
 	}

@@ -5,12 +5,11 @@ library(ggrepel)
 # comparison of CVA for extended data with prcomp
 extendedData=reshape2::dcast(duration, product+subject+rep~descriptor,mean)
 rescva_ow=CSUtils::CVA(extendedData,representation="twoMaps",option="OneWayANOVA")
+
 #plotCVAgg(rescva_ow)
 rescva_tw=CVA(extendedData,representation="twoMaps",option="TwoWayANOVA")
-#rescva_tws=CVA(extendedData,representation="twoMaps",option="tws")
 rescva_mam=CVA(extendedData,representation="twoMaps",option="MAM")
 rescva_overall=CVA(extendedData,representation="twoMaps",option="MultiMAM")
-#rescva_1w=CVA(cheeses,representation="twoMaps",option="1w")
 
 rescva_owb=CVA(extendedData,option="OneWayANOVA")
 rescva_twb=CVA(extendedData,option="TwoWayANOVA")
@@ -22,6 +21,8 @@ rescva_overallb=CVA(extendedData,option="MultiMAM")
 rescva1=CVA(extendedData,representation="twoMaps")
 rescva2=CVA(extendedData,nbDimHotelling=1)
 resSum=sum(rescva1$HotellingTable$hotellingTable!=rescva2$HotellingTable$hotellingTable)!=0
+
+
 rescva1=CVAgg(duration)
 rescva2=CVAgg(duration,nbDimHotelling=1)
 test_that("cva hotelling",
@@ -109,5 +110,21 @@ test_that("cva var similar",
 test_that("cva var b similar",
           expect_true(sum(round(rescva_twb$VarCoord[,1:2]-rescvaOldB$VarCoord[,1:2],digits=8)!=0)==0)
 )
+
+data("data")
+rescva=CVA(data,representation="TwoMaps")
+rescvagg=turnToCVAgg(rescva)
+p1=plotCVAgg(rescvagg,type="ind")
+p2=plotCVAgg(rescvagg,type="var")
+
+rescva2=CVA(data,nbDimHotelling = 2)
+rescvagg2=turnToCVAgg(rescva2,representation="DistanceBiplot")
+p3=plotCVAgg(rescvagg2,type="distanceBiplot")
+
+
+rescvagg=turnToCVAgg(rescva)
+plotCVAgg(rescvagg)
+p1=plotCVAgg(rescvagg,type="ind")
+p2=plotCVAgg(rescvagg,type="var")
 
 

@@ -6,7 +6,7 @@
 Plots the results of a CVA}
 \usage{
 plotCVAgg(
-  respcagg,
+  rescvagg,
   type = "ind",
   text = TRUE,
   n = 10,
@@ -22,7 +22,7 @@ plotCVAgg(
 )
 }
 \arguments{
-\item{respcagg}{res of PCA gg}
+\item{rescvagg}{res of PCA gg}
 
 \item{type}{"ind" for individual graph,"distanceBiplot" for biplot,  "var" for variable graph,"cor" for univariate correlations in decreasing order with the PCA axes}
 
@@ -30,7 +30,7 @@ plotCVAgg(
 
 \item{n}{number of variables to be selected in correlation graph (when type="cor")}
 
-\item{colorInd}{if type(respcagg)="raw", this parameter allows to color the individuals according to a letter in the name of individual. It can be the first one (with "first") or another subset of character ("substr") defined in substrVec}
+\item{colorInd}{if type(rescvagg)="raw", this parameter allows to color the individuals according to a letter in the name of individual. It can be the first one (with "first") or another subset of character ("substr") defined in substrVec}
 
 \item{substrVec}{vector of two numbers representing the two limit positions of characters to be selected when colorInd="substr"}
 

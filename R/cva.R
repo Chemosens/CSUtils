@@ -11,10 +11,10 @@
 #' @importFrom stats pchisq lm manova cor reshape aggregate  sd
 #' @importFrom utils combn
 #' @export
-CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="TwoWayANOVA", representation="biplot") {
+CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="TwoWayANOVA", representation="distanceBiplot") {
 
 #  extendedData=reshape2::dcast(df, Subject+Product+Rep~Attribute,mean)
-
+  match.arg(representation,c("DistanceBiplot","distanceBiplot","twoMaps","TwoMaps"))
   getNumberOfSignificantDimensionsOfCVA=function(eigVal,I,ddlW,p,alpha=0.05)
   {
     # I: product number
@@ -335,27 +335,35 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
   statResults[["F"]]=statF;
   statResults[["pval"]]=statPval
   tabtot=NULL
-  if(option=="MAM"||option=="MultiMAM") {
+  if(option=="MAM"||option=="MultiMAM")
+  {
     decomposition[,"scoreWithoutScaling"]=decomposition[,"prodEffect"]+decomposition[,"Disag"]
     pureData=gettingAppropriateData(decomposition,scoreName="scoreWithoutScaling",subjectName="ass",replicateName="rep",productName="prod",attributeName="Attribute")
     newColnamesPureData=colnames(pureData)
     newColnamesPureData[which(colnames(pureData)=="ass")]="Subject"
     newColnamesPureData[which(colnames(pureData)=="prod")]="Product"
     colnames(pureData)=newColnamesPureData
+
+    if(nbDimHotelling>nbAxes){nbDimHotelling=min(nbDimHotelling,nbAxes);warning("hotelling dimension were higher than the number of axes and was consequently reduced to the number of axes")}
     tabtot=hotellingTable(matCva=pureData,vep=eigVec[,1:nbAxes],axes=c(1:nbDimHotelling),colAttributes=3:dim(pureData)[2],productName="Product")
   }
 
-  if(option=="TwoWayWithoutTakingSubjectEffectIntoEllipses")   {
+  if(option=="TwoWayWithoutTakingSubjectEffectIntoEllipses")
+  {
     decomposition[,"scoreWithoutSubject"]=decomposition[,"prodEffect"]+decomposition[,"int"]
     pureData=gettingAppropriateData(decomposition,scoreName="scoreWithoutSubject",subjectName="ass",replicateName="rep",productName="prod",attributeName="Attribute")
     newColnamesPureData=colnames(pureData)
     newColnamesPureData[which(colnames(pureData)=="ass")]="Subject"
     newColnamesPureData[which(colnames(pureData)=="prod")]="Product"
     colnames(pureData)=newColnamesPureData
+    if(nbDimHotelling>nbAxes){nbDimHotelling=min(nbDimHotelling,nbAxes);warning("hotelling dimension were higher than the number of axes and was consequently reduced to the number of axes")}
     tabtot=hotellingTable(matCva=pureData,vep=eigVec[,1:nbAxes],axes=c(1:nbDimHotelling),colAttributes=3:dim(CenteredProductSubjectTable)[2],productName="Product")
   }
 
-  if(option!="MAM"&& option!="MultiMAM"&&option!="TwoWayWithoutTakingSubjectEffectIntoEllipses") {
+  if(option!="MAM"&& option!="MultiMAM"&&option!="TwoWayWithoutTakingSubjectEffectIntoEllipses")
+  {
+    if(nbDimHotelling>nbAxes){nbDimHotelling=min(nbDimHotelling,nbAxes);warning("hotelling dimension were higher than the number of axes and was consequently reduced to the number of axes")}
+
     tabtot=hotellingTable(matCva=CenteredProductSubjectTable,vep=eigVec[,1:nbAxes],axes=c(1:nbDimHotelling),colAttributes=3:dim(CenteredProductSubjectTable)[2],productName="product")
   }
   res.CVA=list(IndivCoord=individuals,VarCoord=variables,VarCor=varCor,NbDimSig=nbDimSig,HotellingTable=tabtot,ConditioningOfW=ConditioningOfW,B=SSProd,W=SSres,EigenVectors=eigVec,EigenValues=eigVal,Stats=statResults,decomposition=decomposition,IndSup=CenteredProductSubjectTable ,nbAxes=nbAxes,wDemi=wDemi,option=option,representation=representation,ExtendedData=extendedData)

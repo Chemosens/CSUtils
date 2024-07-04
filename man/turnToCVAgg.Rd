@@ -3,7 +3,7 @@
 \name{turnToCVAgg}
 \alias{turnToCVAgg}
 \title{turnToPCAgg
-Return a pcagg object from a PCA object}
+Return a cvagg object from a CVA object}
 \usage{
 turnToCVAgg(
   resCva,
@@ -18,11 +18,11 @@ turnToCVAgg(
 )
 }
 \arguments{
-\item{resCva}{result of PCA function}
+\item{resCva}{result of CVA function}
 
 \item{axes}{the two axes to be chosen for the plot}
 
-\item{representation}{"DistanceBiplot","CorrelationBiplot" or "TwoMaps".}
+\item{representation}{"Biplot" or "TwoMaps"}
 
 \item{expandBiplot}{numeric that allows to custumize the size of variables arrows. If NULL, this parameter is optimized according to the graph.}
 
@@ -41,5 +41,5 @@ listCoord
 }
 \description{
 turnToPCAgg
-Return a pcagg object from a PCA object
+Return a cvagg object from a CVA object
 }

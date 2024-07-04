@@ -1,8 +1,8 @@
 #' @title turnToPCAgg
-#' Return a pcagg object from a PCA object
-#' @param resCva result of PCA function
+#' Return a cvagg object from a CVA object
+#' @param resCva result of CVA function
 #' @return listCoord
-#' @inheritParams PCA
+#' @inheritParams CVA
 #' @inheritParams calculateEllipses
 #' @param expandBiplot numeric that allows to custumize the size of variables arrows. If NULL, this parameter is optimized according to the graph.
 #' @export

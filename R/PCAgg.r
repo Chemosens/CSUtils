@@ -11,6 +11,7 @@
 PCAgg=function(df,dataType="productMeans",option="Covariance",representation="DistanceBiplot",value.var="score",variable="descriptor",axes=list(c(1,2)),expandBiplot=NULL,confInt=0.9,ellipseType="barycentric",ellipseCalculation="Chi",bootstrap=FALSE,nSamples=100)
 {
   match.arg(option,c("Covariance","Correlation"))
+  match.arg(dataType,c("productMeans","raw"))
   if(dataType=="productMeans")
   {
     df$rep="1"
@@ -20,7 +21,6 @@ PCAgg=function(df,dataType="productMeans",option="Covariance",representation="Di
   }
   if(dataType=="raw")
   {
-    #df$rep="1"
     df$period="1"
     formula=paste0("subject+product+rep~",variable)
     formula=as.formula(formula)

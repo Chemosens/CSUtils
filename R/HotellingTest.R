@@ -44,7 +44,7 @@ HotellingTest=function(matx,maty)
 	}
 	else
 	{
-		print("la matrice n'est pas inversible")
+		print("Hotelling: non inversible matrix")
 		if(egalite(moyx,moyy))
 		{
 			p.value=1

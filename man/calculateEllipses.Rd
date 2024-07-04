@@ -19,7 +19,7 @@ calculateEllipses(
 )
 }
 \arguments{
-\item{suppIndividualTable}{an extended data.frame with "product","subject" and as many further column as variables (descriptors) in the dataframe}
+\item{suppIndividualTable}{an extended data frame with "product","subject" and as many further column as variables (descriptors) in the dataframe}
 
 \item{vep}{matrix of eigenvectors obtained by PCA or CVA}
 

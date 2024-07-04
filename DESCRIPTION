@@ -8,6 +8,6 @@ Description: Utils for chemosens.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Depends: R (>= 3.5.0)
 Imports: ellipse,nlme, ggforce, ggrepel,dunn.test, ggplot2,doBy,car, htmltools,RCurl,lme4,lsmeans,multcomp,reshape2,kableExtra,sqldf,stringr,grDevices,Rmisc

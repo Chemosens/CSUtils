@@ -24,7 +24,7 @@ plotCVAgg(rescva_twb,type="distanceBiplot",text=TRUE,n=10,colorInd="all",substrV
 plotCVAgg(rescva_twb,type="distanceBiplot",text=TRUE,n=10,colorInd="all",substrVec=c(1,2),axes=c(1,2),indSup=c("ell","points"),repel=FALSE,revertX=FALSE,revertY=TRUE,sizeText=NULL)
 
 
-p=  plotCVAgg(rescva_owb,type="DistanceBiplot")
+p=  plotCVAgg(rescva_owb,type="distanceBiplot")
 plotCVAgg(rescva_twb)
 plotCVAgg(rescva_mamb)
 plotCVAgg(rescva_overallb)
