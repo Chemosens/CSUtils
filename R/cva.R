@@ -242,7 +242,7 @@ CVA=function(extendedData, test="Hotelling-Lawley",nbDimHotelling=NULL,option="T
 
   if(is.null(nbDimHotelling)){nbDimHotelling=nbDimSig}
 
-  nbAxes=min(nbProducts-1,nbAttributes-1)
+  nbAxes=min(nbProducts-1,nbAttributes)
 
   # Normalization of eigenvectors
   normW=function(v,W) {
